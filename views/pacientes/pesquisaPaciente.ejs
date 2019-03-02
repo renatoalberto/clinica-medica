@@ -1,0 +1,172 @@
+    <!-- Modal Pesquisa de Paciente -->
+    <div class="modal fade" id="modalPesquisaPaciente" tabindex="-1" role="dialog" aria-labelledby="modalPesquisaPacienteLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header alert alert-default navbar">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title warning" id="modalPesquisaPacienteLabel">Pesquisa de Paciente</h4>
+          </div>
+          <div class="modal-body">
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>
+                    <label class="col-sm-2" for="psq-nome">Nome</label>
+                    <div class="col-sm-10">
+                      <input type="text" id="psq-nome" class="form-control" />
+                    </div>
+                  </th>
+                  <th colspan="2">
+                    <label class="control-label col-sm-2" for="psq-telefone">Telefone</label>
+                    <div class="col-sm-10">
+                      <input type="text" id="psq-telefone" class="form-control" />
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+        
+              <tbody id="tabelaPacientes"></tbody>
+      
+            </table>
+            
+            <nav aria-label="Paginação da lista de pacientes">
+              <ul class="pagination">
+                <li id="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#" id="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+                <li id="proxima"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+              </ul>
+            </nav>
+
+          </div>
+          
+          <div class="modal-footer clear">        
+            <button type="button" data-dismiss="modal" class="btn btn-default" >Fechar</button>
+          </div>
+        </div>
+      </div>      
+    </div>
+
+<script>
+  $(document).ready(function() {
+    // (MODAL) de Agendamento de Consulta ----------------------------------------------
+    var pagina            = 0;
+    var qtPaginas         = 0;
+    var qtPacientesPagina = 5;
+
+    var pacientes = [];
+
+    var request = $.ajax({
+      url: 'pacientes/api/todos',
+      method: 'GET',
+      data: {},
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      pacientes = dados.pacientes;
+      carregaPacientes();
+    });
+
+    $('#modalPesquisaPaciente #psq-nome').keyup(function(){
+      var request = $.ajax({
+        url: 'pacientes/api/nome',
+        method: 'POST',
+        data: { nome: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaPacientes();
+      })
+    });
+
+    $('#modalPesquisaPaciente #psq-telefone').keyup(function(){ 
+      var request = $.ajax({
+        url: 'pacientes/api/telefone',
+        method: 'POST',
+        data: { telefone: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaPacientes();
+      })
+    });
+
+    $('#modalPesquisaPaciente #proxima').click(function(e){
+      e.preventDefault();
+
+      if ((pagina+1) < qtPaginas) {
+        pagina++;
+        carregaPacientes();
+      }
+    });
+
+    $('#modalPesquisaPaciente #anterior').click(function(e){
+      e.preventDefault();
+
+      if (pagina != 0) {
+        pagina--;
+        carregaPacientes();
+      }
+    })
+
+    function carregaPacientes() {
+      $('#modalPesquisaPaciente #tabelaPacientes').empty('');
+
+      var ini = pagina * qtPacientesPagina;
+      var fim = ini    + qtPacientesPagina;
+      
+      for(let i = ini; i < pacientes.length && i < fim ; i++) {
+        var paciente = pacientes[i];
+
+        $('#modalPesquisaPaciente #tabelaPacientes').append('<tr id="tr'+paciente._id+'">');
+
+        $('#modalPesquisaPaciente #tr'+paciente._id).append('<td>'+paciente.nome+'</td>');
+        $('#modalPesquisaPaciente #tr'+paciente._id).append('<td>'+paciente.telefone+'</td>');
+        $('#modalPesquisaPaciente #tr'+paciente._id).append('<td id="td'+paciente._id+'">');
+
+        $('#modalPesquisaPaciente #td'+paciente._id).append('<div class="botoes-direita" id="div'+paciente._id+'">');
+
+        $('#modalPesquisaPaciente #div'+paciente._id).append('<button type="button" id="button'+ paciente._id +'" class="btn btn-success btn-xs seleciona-paciente" data-dismiss="modal" data-id="'+ paciente._id +'" data-nome="'+ paciente.nome+'" data-telefone="'+ paciente.telefone +'" data-email="'+paciente.email+'">');
+
+        $('#modalPesquisaPaciente #button'+paciente._id).append('<span class="glyphicon glyphicon-saved"></span>');
+      };
+
+      //Controle paginação
+      qtPaginas = (pacientes.length / qtPacientesPagina);
+      qtPaginas = (pacientes.length % qtPacientesPagina != 0)? parseInt(qtPaginas + 1)  : parseInt(qtPaginas);
+
+      if ( (pagina + 1) >= qtPaginas) {
+        $('#modalPesquisaPaciente #proxima').addClass('disabled');
+      } else {
+        $('#modalPesquisaPaciente #proxima').removeClass('disabled');
+      };
+      
+      if (pagina == 0) {
+        $('#modalPesquisaPaciente #anterior').addClass('disabled');
+      } else {
+        $('#modalPesquisaPaciente #anterior').removeClass('disabled');
+      };
+
+      $('#modalPesquisaPaciente #atual').text(' Pág. '+(pagina + 1)+' ');
+
+      $('#modalPesquisaPaciente .seleciona-paciente').click(function(){
+        var idPaciente       = $(this).attr("data-id");
+        var nomePaciente     = $(this).attr("data-nome");
+        var telefonePaciente = $(this).attr("data-telefone");
+        var emailPaciente    = $(this).attr("data-email");
+        
+        $('#nome').val(nomePaciente);
+        $('#email').val(emailPaciente);
+        $('#telefone').val(telefonePaciente);
+        $('#pacienteId').val(idPaciente);
+        
+        $('#nome').trigger('mudouNome');
+      });
+    };
+
+  })
+</script>    

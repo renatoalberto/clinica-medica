@@ -1,0 +1,36 @@
+  
+  <div class="container" id="caixaAlerta">
+    <% if (mensagem) { %>
+      <% if (mensagem.tipo == 1) { %>
+        <div class="alert alert-info alert-dismissible" role="alert">
+      <% } %>
+      <% if (mensagem.tipo == 2) { %>
+        <div class="alert alert-success alert-dismissible" role="alert">
+      <% } %>
+      <% if (mensagem.tipo == 3) { %>
+        <div class="alert alert-warning alert-dismissible" role="alert">
+      <% } %>
+      <% if (mensagem.tipo == 4) { %>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+      <% } %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong><%= mensagem.erro %></strong> <%= mensagem.texto %>
+      </div>
+    <% } %>  
+  </div>
+
+  <div class="rodape row">
+    <div class="col-xs-5"></div>
+    <div class="col-xs-4">
+      <footer>
+        <p><small>&copy; - Renato Alberto da Silva - 2019</small></p>
+      </footer>
+    </div>
+    <div class="col-xs-3"></div>
+  </div>
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>
+</html>

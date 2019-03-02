@@ -1,0 +1,187 @@
+<%- include('../cabecalho') %>
+<%- include('../menu') %>
+<%- include('../menuAdministração')%>
+
+ <div class="container">
+
+   <h1>Pacientes</h1>
+   <p><a class="btn btn-primary" href="/pacientes/novo">Novo</a></p>
+
+   <table class="table table-striped">
+     <thead>
+        <tr>
+          <th>
+            <label class="col-sm-2" for="psq-nome">Nome</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-nome" class="form-control" />
+            </div>
+          </th>
+          <th>
+            <label class="control-label col-sm-2" for="psq-email">Email</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-email" class="form-control" />
+            </div>
+          </th>
+          <th>
+            <label class="control-label col-sm-2" for="psq-telefone">Telefone</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-telefone" class="form-control" />
+            </div>
+          </th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <!-- Tratamento Paginação -->
+      <%
+        var qtPagina = 3;
+      %>
+
+      <tbody id="tabela">
+
+        <% pacientes.forEach(function(paciente){ %> 
+
+          <tr>
+            <td><%= paciente.nome %></td>
+            <td><%= paciente.email %></td>
+            <td><%= paciente.telefone %></td>
+
+            <td>
+              <div class="botoes-direita">
+                <a href="/pacientes/alterar/<%= paciente._id %>" class="btn btn-info">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </a>               
+                <button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="<%= paciente._id %>">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>   
+              </div>
+            </td>
+          </tr>  
+        <% }) %>
+
+      </tbody>
+    </table>
+   
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+        <li class="active"><a href="#"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+        <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+      </ul>
+    </nav>
+
+  </div>
+   
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title warning" id="myModalLabel">Confirma Exclusão de paciente</h4>
+        </div>
+        <div class="modal-body">
+          A ação não poderá ser desfeita. Exclua somente se tiver certeza.
+        </div>
+        <div class="modal-footer">        
+          <form method="post" action="/pacientes/excluir">
+            <input type="hidden" id="idExcluido" name="id">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+            <button type="submit" class="btn btn-default btn-cinza">Excluir definitivamente</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('../rodape') %>
+
+<script>
+  $(document).ready(function(){
+    var pagina   = 0;
+    var qtPagina = <%= qtPagina %>;
+
+    var request = $.ajax({
+      url: '/pacientes/api/nome',
+      method: 'POST',
+      data: { nome: ' ' },
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      var pagina = 0;
+      var pacientes = dados.pacientes;
+      carregaTabela(pacientes);
+    })
+    
+    $('#psq-nome').keyup(function(){      
+      var request = $.ajax({
+        url: '/pacientes/api/nome',
+        method: 'POST',
+        data: { nome: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        var pagina = 0;
+        var pacientes = dados.pacientes;
+        carregaTabela(pacientes);
+      })
+    });
+
+    $('#psq-email').keyup(function(){
+      var request = $.ajax({
+        url: '/pacientes/api/email',
+        method: 'POST',
+        data: { email: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        var pagina = 0;
+        var pacientes = dados.pacientes;
+        carregaTabela(pacientes);
+      })
+    });
+
+    $('#psq-telefone').keyup(function(){
+      var request = $.ajax({
+        url: '/pacientes/api/telefone',
+        method: 'POST',
+        data: { telefone: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        var pagina = 0;
+        var pacientes = dados.pacientes;
+        carregaTabela(pacientes);
+      })
+    });
+
+  })
+
+  function carregaTabela(pacientes) {
+    $('#tabela').empty('');
+    
+    pacientes.forEach(function(paciente){ 
+      $('#tabela').append('<tr id="tr'+paciente._id+'">');
+
+      $('#tr'+paciente._id).append('<td>'+paciente.nome+'</td>');
+      $('#tr'+paciente._id).append('<td>'+paciente.email+'</td>');
+      $('#tr'+paciente._id).append('<td>'+paciente.telefone+'</td>');
+      $('#tr'+paciente._id).append('<td id="td'+paciente._id+'">');
+
+      $('#td'+paciente._id).append('<div class="botoes-direita" id="div'+paciente._id+'">');
+
+      $('#div'+paciente._id).append('<a href="/pacientes/alterar/'+ paciente._id +'" class="btn btn-info" id="a'+paciente._id+'">');
+      $('#div'+paciente._id).append('<button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="'+ paciente._id +'" id="button'+paciente._id+'">');
+
+      $('#a'+paciente._id).append('<span class="glyphicon glyphicon-pencil"></span>');
+
+      $('#button'+paciente._id).append('<span class="glyphicon glyphicon-trash"></span>');         
+    });
+
+    $('.trataClique').on('click', function(){
+      var id = $(this).attr("data-id");
+      $('#idExcluido').val(id);
+    }); 
+  };
+
+</script>

@@ -1,0 +1,54 @@
+    <!-- Modal Incluir -->
+    <div class="modal fade" id="modalIncluir" tabindex="-1" role="dialog" aria-labelledby="modalIncluirLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header alert alert-default navbar">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title warning" id="modalIncluirLabel">Agendamento de Consulta<span id="agendamento"></span></h4>
+          </div>
+          <div class="modal-body">
+
+            <input type="hidden" id="nomeMedico">
+            <input type="hidden" id="idMedico">
+            <input type="hidden" id="data">
+            <input type="hidden" id="hora">
+            <input type="hidden" id="dataItem">
+            <input type="hidden" id="horaItem">
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>
+                    <label class="col-sm-2" for="psq-nome">Nome</label>
+                    <div class="col-sm-10">
+                      <input type="text" id="psq-nome" class="form-control" />
+                    </div>
+                  </th>
+                  <th colspan="2">
+                    <label class="control-label col-sm-2" for="psq-telefone">Telefone</label>
+                    <div class="col-sm-10">
+                      <input type="text" id="psq-telefone" class="form-control" />
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+        
+              <tbody id="tabela"></tbody>
+      
+            </table>
+            
+            <nav aria-label="Paginação da lista de pacientes">
+              <ul class="pagination">
+                <li id="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#" id="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+                <li id="proxima"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+              </ul>
+            </nav>
+
+          </div>
+          <div class="modal-footer clear">        
+            <button type="button" data-dismiss="modal" class="btn btn-default" >Fechar</button>
+          </div>
+        </div>
+      </div>      
+    </div>

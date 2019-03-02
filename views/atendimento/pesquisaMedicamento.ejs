@@ -1,0 +1,297 @@
+    <!-- Modal Pesquisa de Medicamento -->
+    <div class="modal fade" id="modalPesquisaMedicamento" tabindex="-1" role="dialog" aria-labelledby="modalPesquisaMedicamentoLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header alert alert-default navbar">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title warning" id="modalPesquisaMedicamentoLabel">Pesquisa de Medicamentos</h4>
+          </div>
+          <div class="modal-body">
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th class="col-sm-6">
+                    <label class="col-sm-2" for="psq-med-nome">Nome</label>
+                    <div class="col-sm-10">
+                      <input type="text" id="psq-med-nome" class="form-control" autofocus/>
+                    </div>
+                  </th>
+                  <th class="col-sm-6" colspan="2">
+                    <label class="control-label col-sm-3" for="psq-apresentacao">Detalhes</label>
+                    <div class="col-sm-9">
+                      <input type="text" id="psq-apresentacao" class="form-control" />
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+        
+              <tbody id="tabelaMedicamentos"></tbody>
+      
+            </table>
+            
+            <nav aria-label="Paginação da lista de medicamentos">
+              <ul class="pagination">
+                <li id="pagMedAnt"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#" id="pagAtual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+                <li id="pagMedProx"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+              </ul>
+            </nav>
+
+          </div>
+          <div class="modal-footer clear">        
+            <button type="button" data-dismiss="modal" class="btn btn-default" >Fechar</button>
+          </div>
+        </div>
+      </div>      
+    </div>
+
+
+<!-- linha oculta para inclusão de medicamento na página pricipal -->
+    <table hidden>
+      <tbody id="linha-medicamento" >
+        <tr class="row">
+          <td class="medicamento-nome col-xs-5"></td>
+          <td class="medicamento-apresentacao col-xs-5"></td>
+          <td class="col-xs-2">
+            <button type="button" class="btn btn-info btn-xs medicamento-info" data-container="body" data-toggle="popover" data-placement="top" data-original-title="Detalhes do Medicamento" title="" data-html="true" data-content="<h3>Remédio receitado</h3><p>leia com atenção</p>"><span class="glyphicon glyphicon-info-sign"></span></button>
+            <button class="btn btn-danger btn-xs medicamento-exclui"><span class="glyphicon glyphicon-trash"></span></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+
+<!-- linha oculta para inclusão de medicamento na modal -->
+    <table hidden>
+      <tbody id="linha-medicamento-modal" >
+        <tr>
+          <td class="medicamento-nome"></td>
+          <td class="medicamento-apresentacao"></td>
+          <td><button class="btn btn-success btn-xs seleciona-medicamento" data-dismiss="modal"><span class="glyphicon glyphicon-saved"></span></button></td>
+        </tr>
+      </tbody>
+    </table>
+
+<!-- Detalhamento do Medicamento via popover -->    
+    <div id="detMedicamento" hidden>
+      <dl>
+        <dt>Nome:</dt>
+        <dd class="nome"></dd>
+        <dt>Laboratório:</dt>
+        <dd class="laboratorio"></dd>
+        <dt>Pricípio Ativo:</dt>
+        <dd class="pricAtivo"></dd>
+        <dt>Apresentação:</dt>
+        <dd class="apresentacao"></dd>
+        <dt>Classe Terapêutica:</dt>
+        <dd class="classeTerapeutica"></dd>
+      </dl>
+    </div>
+
+<script>
+  $(document).ready(function(){
+    var paginaAtual   = 1;
+    const qtPorPagina = 5;
+
+    var request = $.ajax({
+      url: 'medicamentos/api/inicio',
+      method: 'POST',
+      data: {
+        qtPorPagina: qtPorPagina
+      },
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      carregaMedicamentos(dados.medicamentos);
+    });
+
+    $('#pagMedAnt').click(function(e){
+      e.preventDefault();
+
+      if (paginaAtual == 1) {
+        return null;
+      }
+
+      var nome         = $('#psq-med-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      --paginaAtual;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados.medicamentos);
+      });
+    })
+
+    $('#pagMedProx').click(function(e){
+      e.preventDefault();
+
+      if ($('#pagMedProx').hasClass('disabled')) {
+        return null;
+      }
+
+      var nome         = $('#psq-med-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      ++paginaAtual;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados.medicamentos);
+      });
+    })
+
+    $('#psq-med-nome').keyup(function(){
+      var nome         = $('#psq-med-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      paginaAtual = 1;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados.medicamentos);
+      });
+    })
+    
+    $('#psq-apresentacao').keyup(function(){
+      var nome         = $('#psq-med-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      paginaAtual = 1;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados.medicamentos);
+      });
+    })
+
+    function carregaMedicamentos(medicamentos) {
+      var qtRegistros = 0;
+
+      $('#tabelaMedicamentos').html('');
+      
+      medicamentos.forEach(function(m, index){
+
+        if (index < qtPorPagina) {
+          $('#linha-medicamento-modal .medicamento-nome').html(m.nome);
+          $('#linha-medicamento-modal .medicamento-apresentacao').html(m.apresentacao);
+          $('#linha-medicamento-modal .btn').attr('data-id',m._id);
+          $('#linha-medicamento-modal .btn').attr('data-nome',m.nome);
+          $('#linha-medicamento-modal .btn').attr('data-laboratorio',m.laboratorio);
+          $('#linha-medicamento-modal .btn').attr('data-princ-ativo',m.pricipioAtivo);
+          $('#linha-medicamento-modal .btn').attr('data-apresentacao',m.apresentacao);
+          $('#linha-medicamento-modal .btn').attr('data-classe-terapeutica',m.classeTerapeutica);
+  
+          var linha = $('#linha-medicamento-modal').html();
+          $('#tabelaMedicamentos').append(linha);
+        }
+
+        qtRegistros = index;
+      });
+
+      ++qtRegistros;
+
+      if (qtRegistros <= qtPorPagina) {
+        $('#pagMedProx').addClass('disabled');
+      } else {
+        $('#pagMedProx').removeClass('disabled');
+      };
+
+      if (paginaAtual > 1) {
+        $('#pagMedAnt').removeClass('disabled');
+      } else {
+        $('#pagMedAnt').addClass('disabled');
+      }
+
+      $('#pagAtual').text(' Pág. '+ paginaAtual);
+
+      $('.seleciona-medicamento').click(function(){
+        var id                = $(this).attr('data-id');
+        var nome              = $(this).attr('data-nome');
+        var laboratorio       = $(this).attr('data-laboratorio');
+        var pricAtivo         = $(this).attr('data-princ-ativo');
+        var apresentacao      = $(this).attr('data-apresentacao');
+        var classeTerapeutica = $(this).attr('data-classe-terapeutica');
+
+        $('#linha-medicamento .medicamento-nome').text(nome);
+        $('#linha-medicamento .medicamento-apresentacao').text(apresentacao);
+
+        $('#linha-medicamento .medicamento-info').attr('data-id',id);
+        $('#linha-medicamento .medicamento-info').attr('data-nome',nome);
+        $('#linha-medicamento .medicamento-info').attr('data-laboratorio',laboratorio);
+        $('#linha-medicamento .medicamento-info').attr('data-princ-ativo',pricAtivo);
+        $('#linha-medicamento .medicamento-info').attr('data-apresentacao',apresentacao);
+        $('#linha-medicamento .medicamento-info').attr('data-classe-terapeutica',classeTerapeutica);
+        
+        var linha = $('#linha-medicamento').html();
+        $('#corpoTabMedicamentos').prepend(linha);
+        
+        $('#corpoTabMedicamentos .medicamento-exclui').click(function(){
+          $('#corpoTabMedicamentos tr').has(this).remove();
+        })
+        
+        $('#corpoTabMedicamentos .medicamento-info').eq(0).click(function(){ 
+
+          $('#detMedicamento .nome').text(nome);
+          $('#detMedicamento .laboratorio').text(laboratorio);
+          $('#detMedicamento .pricAtivo').text(pricAtivo);
+          $('#detMedicamento .apresentacao').text(apresentacao);
+          $('#detMedicamento .classeTerapeutica').text(classeTerapeutica);
+
+          var detalhes = $('#detMedicamento').html();
+
+          $(this).attr('data-content', detalhes);
+          $(this).popover('toggle');
+        });
+
+        $('#corpoTabMedicamentos .medicamento-info').eq(0).trigger('click');
+        $('#corpoTabMedicamentos .medicamento-info').eq(0).trigger('click');
+        $('#corpoTabMedicamentos .medicamento-info').eq(0).trigger('click');
+      });
+
+    };
+
+
+  })
+</script>

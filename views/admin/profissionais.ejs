@@ -1,0 +1,77 @@
+<%- include('../cabecalho') %>
+<%- include('../menu') %>
+<%- include('../menuAdministração')%>
+
+ <div class="container">
+
+   <h1>Profissionais</h1>
+   <p><a class="btn btn-primary" href="/admin/profissionais/novo">Novo</a></p>
+
+   <table class="table table-striped">
+     <thead>
+        <tr>
+         <th>Nome</th>
+         <th>Email</th>
+         <th>Telefone</th>
+         <th>Função</th>
+         <th>Admin</th>
+         <th></th>
+        </tr>
+     </thead>
+
+      <tbody id="tabela">
+        <% profissionais.forEach(function(profissional){ %>  
+          <tr>
+            <td><%= profissional.nome %></td>
+            <td><%= profissional.email %></td>
+            <td><%= profissional.telefone %></td>
+            <td><%= profissional.funcao %></td>
+
+            <td>
+              <% if (profissional.admin) { %>
+                <span class="glyphicon glyphicon-ok"></span>
+              <% } %>
+            </td>
+
+            <td>
+              <div class="botoes-direita">
+                <a href="/admin/profissionais/alterar/<%= profissional._id %>" class="btn btn-info">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </a>               
+                <button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="<%= profissional._id %>">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>   
+              </div>
+            </td>
+          </tr>  
+        <% }) %>
+      </tbody>
+   </table>
+
+   <br/>
+
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title warning" id="myModalLabel">Confirma Exclusão de Profissional</h4>
+        </div>
+        <div class="modal-body">
+          A ação não poderá ser desfeita. Exclua somente se tiver certeza.
+        </div>
+        <div class="modal-footer">        
+          <form method="post" action="/admin/profissionais/excluir">
+            <input type="hidden" id="idExcluido" name="id">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+            <button type="submit" class="btn btn-default btn-cinza">Excluir definitivamente</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('../rodape') %>

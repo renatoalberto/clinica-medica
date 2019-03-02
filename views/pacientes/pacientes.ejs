@@ -1,0 +1,225 @@
+<%- include('../cabecalho') %>
+<%- include('../menu') %>
+<%- include('../menuAdministração')%>
+
+ <div class="container">
+
+   <h1>Pacientes</h1>
+   <p><a class="btn btn-primary" href="/pacientes/novo">Novo</a></p>
+
+   <table class="table table-striped">
+     <thead>
+        <tr>
+          <th>
+            <label class="col-sm-2" for="psq-nome">Nome</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-nome" class="form-control" />
+            </div>
+          </th>
+          <th>
+            <label class="control-label col-sm-2" for="psq-email">Email</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-email" class="form-control" />
+            </div>
+          </th>
+          <th>
+            <label class="control-label col-sm-2" for="psq-telefone">Telefone</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-telefone" class="form-control" />
+            </div>
+          </th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody id="tabela"></tbody>
+
+    </table>
+   
+    <nav aria-label="Paginação da lista de pacientes">
+      <ul class="pagination">
+        <li id="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+        <li class="active"><a href="#" id="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+        <li id="proxima"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+      </ul>
+    </nav>
+
+  </div>
+   
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title warning" id="myModalLabel">Confirma Exclusão de paciente</h4>
+        </div>
+        <div class="modal-body">
+          A ação não poderá ser desfeita. Exclua somente se tiver certeza.
+        </div>
+        <div class="modal-footer">        
+          <input type="hidden" id="idExcluido" name="id">
+          <button type="button" data-dismiss="modal" class="btn btn-default" >Fechar</button>
+          <button type="button" data-dismiss="modal" class="btn btn-default btn-cinza" id="btnExcluir">Excluir definitivamente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('../rodape') %>
+
+<script>
+  $(document).ready(function(){
+    var pagina            = 0;
+    var qtPaginas         = 0;
+    var qtPacientesPagina = 10;
+    var pacientes         = {};
+
+    var request = $.ajax({
+      url: '/pacientes/api/todos',
+      method: 'GET',
+      data: null,
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      pagina = 0;
+      pacientes = dados.pacientes;
+      carregaTabela();
+    })
+    
+    $('#psq-nome').keyup(function(){      
+      var request = $.ajax({
+        url: '/pacientes/api/nome',
+        method: 'POST',
+        data: { nome: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaTabela();
+      })
+    });
+
+    $('#btnExcluir').click(function(){   
+      var request = $.ajax({
+        url: '/pacientes/api/excluir',
+        method: 'DELETE',
+        data: { id: $('#idExcluido').val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pacientes = dados.pacientes;
+        carregaMensagem(dados.mensagem)
+        carregaTabela();
+      })
+    });    
+
+    $('#psq-email').keyup(function(){
+      var request = $.ajax({
+        url: '/pacientes/api/email',
+        method: 'POST',
+        data: { email: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaTabela();
+      })
+    });
+
+    $('#psq-telefone').keyup(function(){
+      var request = $.ajax({
+        url: '/pacientes/api/telefone',
+        method: 'POST',
+        data: { telefone: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaTabela();
+      })
+    });
+
+    $('#anterior').click(function(e){
+      e.preventDefault();
+
+      if (pagina != 0) {
+        pagina--;
+        carregaTabela();
+      }
+    });
+
+    $('#proxima').click(function(e){
+      e.preventDefault();
+
+      if ((pagina + 1) < qtPaginas) {
+        pagina++;
+        carregaTabela();
+      }
+    });
+
+    function carregaTabela() {
+      $('#tabela').empty('');
+
+      var ini = pagina * qtPacientesPagina;
+      var fim = ini    + qtPacientesPagina;
+      
+      for(let i = ini; i < pacientes.length && i < fim ; i++) {
+        var paciente = pacientes[i];
+  
+        $('#tabela').append('<tr id="tr'+paciente._id+'">');
+  
+        $('#tr'+paciente._id).append('<td>'+paciente.nome+'</td>');
+        $('#tr'+paciente._id).append('<td>'+paciente.email+'</td>');
+        $('#tr'+paciente._id).append('<td>'+paciente.telefone+'</td>');
+        $('#tr'+paciente._id).append('<td id="td'+paciente._id+'">');
+  
+        $('#td'+paciente._id).append('<div class="botoes-direita" id="div'+paciente._id+'">');
+  
+        $('#div'+paciente._id).append('<a href="/pacientes/alterar/'+ paciente._id +'" class="btn btn-info" id="a'+paciente._id+'">');
+        $('#div'+paciente._id).append('<button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="'+ paciente._id +'" id="button'+paciente._id+'">');
+  
+        $('#a'+paciente._id).append('<span class="glyphicon glyphicon-pencil"></span>');
+  
+        $('#button'+paciente._id).append('<span class="glyphicon glyphicon-trash"></span>');         
+      };
+
+      //Controle paginação
+      qtPaginas = (pacientes.length / qtPacientesPagina);
+      qtPaginas = (pacientes.length % qtPacientesPagina != 0)? parseInt(qtPaginas + 1)  : parseInt(qtPaginas);
+
+      if ( (pagina + 1) >= qtPaginas) {
+        $('#proxima').addClass('disabled');
+      } else {
+        $('#proxima').removeClass('disabled');
+      };
+      
+      if (pagina == 0) {
+        $('#anterior').addClass('disabled');
+      } else {
+        $('#anterior').removeClass('disabled');
+      };
+
+      $('#atual').text(' Pág. '+(pagina + 1)+' ');
+
+      // Adiciona eventos
+      $('.trataClique').click(function(){
+        var id = $(this).attr("data-id");
+        $('#idExcluido').val(id);
+      }); 
+    };
+
+    function carregaMensagem(mensagem) {
+      $('#caixaAlerta').append('<div class="alert alert-success alert-dismissible" role="alert">');
+      $('#caixaAlerta div').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+      $('#caixaAlerta div').append('<strong>'+ mensagem.erro +'</strong> '+ mensagem.texto );
+      $('#caixaAlerta > .alert').delay( 4000 ).slideUp( 400 );
+    }
+
+  })
+
+
+</script>

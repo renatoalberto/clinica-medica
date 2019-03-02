@@ -1,0 +1,811 @@
+<%- include('../cabecalho') %>
+<%- include('../menu') %>
+<%- include('../menuAdministração')%>
+
+  <div class="container">
+
+    <fieldset id="fieldset-paciente">
+      <legend>Marcação de Consultas</legend>
+
+      <fieldset >
+        <legend>      
+          Paciente
+          <button class="btn btn-primary desgruda" id="psqPaciente" data-toggle="modal" data-target="#modalPesquisaPaciente"><span class="glyphicon glyphicon-search"></span></button>
+        </legend>
+        
+        <div class="form-group col-sm-4">
+          <label for="nome">Nome</label>
+          <input type="text" class="form-control" id="nome" readonly>
+        </div>
+        <div class="form-group col-sm-4">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" readonly>
+        </div>
+        <div class="form-group col-sm-4">
+          <label for="telefone">Telefone</label>
+          <input type="text" class="form-control" id="telefone" readonly>
+        </div>
+        <input type="hidden" id="pacienteId">
+
+        <div class="form-group col-xs-12">
+          <p class="text-right" id="inicioAtendimento" hidden>Início do atendimento <span id="textoDataAtendimento">19/02/2019</span> às <span id="textoHoraAtendimento">08:36</span></p>
+        </div>
+
+        <table class="table" hidden>
+          <thead>
+            <tr>
+              <th>Médico</th>
+              <th>Data</th> 
+              <th>Hora</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody id="tabela-consultas-paciente"></tbody>
+
+        </table>
+
+        <table hidden>
+          <tbody id="tabela-consultas-paciente-oculta">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <div class="botoes-direita">
+                  <span class="btn-link btn-xs glyphicon glyphicon-ok"></span>
+                  <button class="btn btn-primary btn-xs btn-confirma" ><span class="glyphicon glyphicon-ok"></span></button>
+                  <button class="btn btn-danger  btn-xs btn-remove" data-toggle="modal" data-target="#modalExcluirPaciente"><span class="glyphicon glyphicon-remove"></span></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </fieldset>
+
+      <fieldset id="fieldset-data">
+        <legend>
+          Agenda do Doutor
+          <span class="btn-link desgruda glyphicon glyphicon-calendar"></span>
+        </legend>
+
+        <br/>
+
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="doutor" class="col-sm-4 control-label">Selecione o nome do doutor</label>
+
+            <div class="col-sm-5">
+              <select name="seldoutor" id="seldoutor" class="form-control">
+                <% medicos.forEach(function(medico){ %>
+
+                  <% if(String(usuario.id) == String(medico._id) || usuario.funcao == "Recepcionista" || usuario.admin == "true") { %>     
+                    <option data-id="<%= medico._id %>" >Dr. <%= medico.nome %></option>
+                  <% } %>
+
+                <% }) %>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <br/>
+
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">   
+    
+        <% dias.forEach(function(dia) { %>
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading<%= dia.item %>">
+              <h4 class="panel-title">
+                <a class="collapsed link-agenda" data-item="<%= dia.item %>" data-data="<%= dia.data %>" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= dia.item %>" aria-expanded="false" aria-controls="collapse<%= dia.item %>">
+                  Agenda do dia <span id="dia-<%= dia.item %>"><%= dia.data %></span> - <span id="semana-<%= dia.item %>"><%= dia.semana %></span>
+                  <span class="badge botoes-direita" id="badge-<%= dia.item %>">20</span>
+                </a>
+              </h4>
+            </div>
+
+            <div id="collapse<%= dia.item %>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading<%= dia.item %>">
+              <div class="panel-body">
+                <ul class="list-group">
+                  <% lista.forEach(function(vaga) { %>
+                    <li class="list-group-item item-<%= vaga.item %>">
+                      <button id="btn-plus-<%= dia.item %>-<%= vaga.item %>"       class="btn btn-primary btn-xs btn-plus"     data-hora="<%= vaga.hora %>" data-data="<%= dia.data %>" data-item="<%= dia.item %>" data-vaga="<%= vaga.item %>" data-toggle="modal" data-target="#modalIncluir"><%= vaga.hora %> <span class="glyphicon glyphicon-plus"></span></button>
+                      <span id="vaga-<%= dia.item %>-<%= vaga.item %>" data-vaga="<%= vaga.item %>" class="vagas"></span>
+                      <div class="botoes-direita">
+                        <button id="btn-confirma-<%= dia.item %>-<%= vaga.item %>" class="btn btn-primary btn-xs btn-confirma" data-hora="<%= vaga.hora %>" data-data="<%= dia.data %>" data-item="<%= dia.item %>" data-vaga="<%= vaga.item %>" disabled><span class="glyphicon glyphicon-ok"></span></button>
+                        <button id="btn-cafe-<%= dia.item %>-<%= vaga.item %>"     class="btn btn-info    btn-xs btn-cafe"     data-hora="<%= vaga.hora %>" data-data="<%= dia.data %>" data-item="<%= dia.item %>" data-vaga="<%= vaga.item %>"         ><span class="glyphicon glyphicon-time"></span></button>                  
+                        <button id="btn-remove-<%= dia.item %>-<%= vaga.item %>"   class="btn btn-danger  btn-xs btn-remove"   data-hora="<%= vaga.hora %>" data-data="<%= dia.data %>" data-item="<%= dia.item %>" data-vaga="<%= vaga.item %>" data-toggle="modal" data-target="#modalExcluirData" disabled><span class="glyphicon glyphicon-remove"></span></button>
+                      </div>
+                    </li>   
+                  <% }) %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+        </div>
+               
+        <nav id="paginacaoAccordion" aria-label="Paginação da lista de datas disponíveis para marcação de consultas">
+          <ul class="pagination">
+            <li class="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+            <li class="active"  ><a href="#" class="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+            <li class="proxima" ><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+          </ul>
+        </nav>
+
+        <br/>
+        
+      </fieldset>
+    </fieldset>
+
+  </div>
+
+<!-- Modal de lista de Pacientes -->    
+<%- include('consultaIncluir') %>
+
+<!-- Modal de Exclusão de Consultas Lista por Paciente -->    
+<%- include('consultaExcluirPaciente') %>
+
+<!-- Modal de Exclusão de Consultas Lista por Data-->    
+<%- include('consultaExcluirData') %>
+
+<!-- Modal de lista de Pacientes -->    
+<%- include('../pacientes/pesquisaPaciente') %>     
+
+
+<%- include('../rodape') %>
+
+<script>
+  $(document).ready(function(){   
+    var paginaAcordeon    = 1;
+    var primeiraDataLista = [];
+
+// (Mudou e Paciente Pesquisado) Executado após seleção da modal--------------------
+    $('#nome').on('mudouNome', function() {
+      var request = $.ajax({
+        url: 'consultas/api/paciente',
+        method: 'POST',
+        data: {
+          pacienteId:       $('#pacienteId').val(),
+          pacienteNome:     $('#nome').val(),
+          pacienteTelefone: $('#telefone').val()
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        $('#fieldset-paciente .table').removeAttr('hidden');
+        $('#tabela-consultas-paciente').html('');
+
+        dados.consultas.forEach( consulta => {
+          $('#tabela-consultas-paciente-oculta td').eq(0).text('Dr. '+consulta.medico.nome);
+          $('#tabela-consultas-paciente-oculta td').eq(1).text(consulta.data);
+          $('#tabela-consultas-paciente-oculta td').eq(2).text(consulta.hora);
+          $('#tabela-consultas-paciente-oculta .btn-link').attr('data-id', consulta._id);
+          $('#tabela-consultas-paciente-oculta .btn-confirma').attr('data-id', consulta._id);
+          $('#tabela-consultas-paciente-oculta .btn-remove').attr('data-id', consulta._id);
+          $('#tabela-consultas-paciente-oculta .btn-remove').attr('data-data', consulta.data);
+          $('#tabela-consultas-paciente-oculta .btn-remove').attr('data-hora', consulta.hora);
+
+          if(consulta.confirmacao) {
+            $('#tabela-consultas-paciente-oculta .btn-confirma').hide();
+            $('#tabela-consultas-paciente-oculta .btn-link').show();
+          } else {
+            $('#tabela-consultas-paciente-oculta .btn-confirma').show();
+            $('#tabela-consultas-paciente-oculta .btn-link').hide();
+          }
+          
+          var linha = $('#tabela-consultas-paciente-oculta').html();
+          $('#tabela-consultas-paciente').prepend(linha);
+
+        })
+        
+        $('#tabela-consultas-paciente .btn-confirma').click(function(){
+          var id          = $(this).attr('data-id');
+          var link        = $('#tabela-consultas-paciente .btn-link[data-id='+id+']');        
+          var btnConfirma = $('#tabela-consultas-paciente .btn-confirma[data-id='+id+']');        
+          confirmaConsulta(link, btnConfirma, id);
+        });
+
+        $('#tabela-consultas-paciente .btn-remove').click(function(){       
+          var btnRemove   = $(this);        
+          excluiConsulta(btnRemove);
+        });
+
+      });
+    });
+
+    function confirmaConsulta(link, btnConfirma, id) {
+      var request = $.ajax({
+        url: '/consultas/api/confirma-consulta',
+        method: 'POST',
+        data: { 
+          id: id
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        $(btnConfirma).fadeOut( "slow", function() {
+          $(link).show();
+        });
+      });
+    };
+
+    function excluiConsulta(btnRemove, id) {
+      var nomePaciente = $('#nome').val();
+      var id           = $(btnRemove).attr('data-id');
+      var data         = $(btnRemove).attr('data-data');
+      var hora         = $(btnRemove).attr('data-hora');
+
+      $('#modalExcluirPaciente .pacienteNome').text(nomePaciente);
+      $('#modalExcluirPaciente .horaConsulta').text(hora);
+      $('#modalExcluirPaciente .diaConsulta').text(data)
+      $('#modalExcluirPaciente .btn-conf-exclusao').attr("data-id", id);
+
+      $('#modalExcluirPaciente .btn-conf-exclusao').click(function(){
+        var request = $.ajax({
+          url: '/consultas/api/exclui-consulta',
+          method: 'DELETE',
+          data: { 
+            id: $(this).attr('data-id')
+          },
+          dataType: 'json'
+        });
+        request.done(function(dados){
+          $('#tabela-consultas-paciente tr').has(btnRemove).remove();
+        });
+      });    
+    };
+
+// (Mudança de doutor) -------------------------------------------------------------
+    $('#seldoutor').change(function(){
+      var nomeMedico = $('#seldoutor').val();
+      var idMedico   = $('#seldoutor').find( "option:selected" ).attr("data-id");
+
+      paginaAcordeon = 1;
+
+      var request = $.ajax({
+        url: '/consultas/api/agenda-doutor',              
+        method: 'POST',
+        data: {
+          medicoId: idMedico
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        dados.dias.forEach(function(d, index){
+          $('#dia-'   +(index+1)).text(d.data);
+          $('#semana-'+(index+1)).text(d.semana);
+          $('.link-agenda[data-item = "'+(index+1)+'"]').attr('data-data', d.data);
+        });
+
+        $('.link-agenda[aria-expanded=true]').trigger("click");
+        $('.badge').text('20');
+
+        $('#paginacaoAccordion .atual').text(' Pág. ' + paginaAcordeon);
+        $('#paginacaoAccordion .anterior').addClass('disabled');
+
+        $('.link-agenda').each(function(){
+          //Dados para pesquisa
+          var data       = $(this).attr('data-data');
+          var dataItem   = $(this).attr('data-item');
+          pesquisaConsultas(data, dataItem);
+        });
+      });
+    });
+
+    $('#seldoutor').trigger("change");
+
+// (Paginação do acordeon) ---------------------------------------------------------
+    $('#paginacaoAccordion .proxima').click(function(e){
+      e.preventDefault();
+
+      var nomeMedico = $('#seldoutor').val();
+      var idMedico   = $('#seldoutor').find( "option:selected" ).attr("data-id");
+
+      primeiraDataLista.push($('#heading1 a').attr('data-data'));
+
+      var request = $.ajax({
+        url: '/consultas/api/agenda-doutor',              
+        method: 'POST',
+        data: {
+          medicoId: idMedico,
+          data: $('#heading7 a').attr('data-data'),
+          proximaPagina: true
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        dados.dias.forEach(function(d, index){
+          $('#dia-'   +(index+1)).text(d.data);
+          $('#semana-'+(index+1)).text(d.semana);
+          $('.link-agenda[data-item = "'+(index+1)+'"]').attr('data-data', d.data);
+        });
+
+        $('.link-agenda[aria-expanded=true]').trigger("click");
+        $('.badge').text('20');
+        
+        ++paginaAcordeon;
+
+        $('#paginacaoAccordion .atual').text(' Pág. ' + paginaAcordeon);
+        $('#paginacaoAccordion .anterior').removeClass('disabled');
+
+        $('.link-agenda').each(function(){
+          //Dados para pesquisa
+          var data       = $(this).attr('data-data');
+          var dataItem   = $(this).attr('data-item');
+          pesquisaConsultas(data, dataItem);
+        });
+      });
+    });
+
+    $('#paginacaoAccordion .anterior').click(function(e){
+      e.preventDefault();
+
+      if(paginaAcordeon == 1) {
+        return null;
+      }
+      
+      var nomeMedico = $('#seldoutor').val();
+      var idMedico   = $('#seldoutor').find( "option:selected" ).attr("data-id");
+
+      var request = $.ajax({
+        url: '/consultas/api/agenda-doutor',              
+        method: 'POST',
+        data: {
+          medicoId: idMedico,
+          data: primeiraDataLista.pop()
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        dados.dias.forEach(function(d, index){
+          $('#dia-'   +(index+1)).text(d.data);
+          $('#semana-'+(index+1)).text(d.semana);
+          $('.link-agenda[data-item = "'+(index+1)+'"]').attr('data-data', d.data);
+        });
+
+        $('.link-agenda[aria-expanded=true]').trigger("click");
+        $('.badge').text('20');
+        
+        --paginaAcordeon;
+
+        $('#paginacaoAccordion .atual').text(' Pág. ' + paginaAcordeon);        
+
+        if (paginaAcordeon == 1) {
+          $('#paginacaoAccordion .anterior').addClass('disabled');
+        };
+
+        $('.link-agenda').each(function(){
+          //Dados para pesquisa
+          var data       = $(this).attr('data-data');
+          var dataItem   = $(this).attr('data-item');
+          pesquisaConsultas(data, dataItem);
+        });
+      });
+    });
+
+// (AGENDA MARCADA) carrega horários marcados --------------------------------------
+    $('.link-agenda').click(function(){
+
+      //Só realiza a consulta quando acordeon for abrir
+      if ($(this).hasClass('aberto')) {
+        $(this).removeClass('aberto');
+        return null;
+      } else {
+        $(this).addClass('aberto');
+      }
+      
+      //Inicializa lista de vagas
+      var dataItem = $(this).attr('data-item');
+      var data     = $(this).attr('data-data');
+
+      for(var i=0; i<20; i++) {
+        $('#vaga-'        +dataItem+'-'+(i+1)).html('');
+
+        $('#btn-plus-'    +dataItem+'-'+(i+1)).removeAttr('disabled');
+        $('#btn-remove-'  +dataItem+'-'+(i+1)).removeAttr("disabled");
+        $('#btn-confirma-'+dataItem+'-'+(i+1)).removeAttr("disabled");
+
+        $('#btn-plus-'    +dataItem+'-'+(i+1)).removeAttr("data-id-consulta");
+        $('#btn-remove-'  +dataItem+'-'+(i+1)).removeAttr("data-id-consulta");
+        $('#btn-cafe-'    +dataItem+'-'+(i+1)).removeAttr("data-id-consulta");
+        $('#btn-confirma-'+dataItem+'-'+(i+1)).removeAttr("data-id-consulta");
+
+        $('#btn-plus-'    +dataItem+'-'+(i+1)).attr("data-data", data);
+        $('#btn-remove-'  +dataItem+'-'+(i+1)).attr("data-data", data);
+        $('#btn-cafe-'    +dataItem+'-'+(i+1)).attr("data-data", data);
+        $('#btn-confirma-'+dataItem+'-'+(i+1)).attr("data-data", data);
+
+        $('#collapse'     +dataItem).find('.item-' +(i+1)).removeClass("cinza");
+        $('#vaga-'        +dataItem+ '-'           +(i+1)).removeClass("alerta");
+
+        $('#btn-remove-'  +dataItem+'-'+(i+1)).attr("disabled", true);
+        $('#btn-confirma-'+dataItem+'-'+(i+1)).attr("disabled", true);
+      }
+
+      pesquisaConsultas(data, dataItem);
+    });
+    
+    function pesquisaConsultas(data, dataItem) {
+      var nomeMedico = $('#seldoutor').val();
+      var idMedico   = $('#seldoutor').find( "option:selected" ).attr("data-id");
+  
+      var tamanho    = nomeMedico.length;
+      nomeMedico     = nomeMedico.slice(4, tamanho);
+  
+      var request = $.ajax({
+        url: '/consultas/api/consultas-marcadas',              
+        method: 'POST',
+        data: {
+          medicoNome: nomeMedico,
+          medicoId: idMedico,
+          data : data
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        consultas = dados.consultas;
+        carregaConsultas(consultas, dataItem);
+      });
+    }
+
+    function carregaConsultas(consultas, dataItem) {
+      var qtVagas = 20;
+
+      consultas.forEach(function(c){
+        if (c.paciente) {
+          $('#vaga-'           +dataItem+'-'+c.horaItem).html('Telefone: '+c.paciente.telefone+' - Nome: '+c.paciente.nome);
+        }
+
+        $('#btn-plus-'       +dataItem+'-'+c.horaItem).attr("data-id-consulta", c._id);
+        $('#btn-confirma-'   +dataItem+'-'+c.horaItem).attr("data-id-consulta", c._id);
+        $('#btn-cafe-'       +dataItem+'-'+c.horaItem).attr("data-id-consulta", c._id);        
+        $('#btn-remove-'     +dataItem+'-'+c.horaItem).attr("data-id-consulta", c._id);
+        
+        $('#btn-plus-'       +dataItem+'-'+c.horaItem).attr("disabled", true);
+        $('#btn-remove-'     +dataItem+'-'+c.horaItem).removeAttr('disabled');
+        
+        if (!c.confirmacao) {
+          $('#btn-confirma-' +dataItem+'-'+c.horaItem).removeAttr('disabled');         
+        };
+
+        if (!c.cafezinho) {          
+          $('#collapse'     +dataItem).find('.item-' +c.horaItem).removeClass("cinza");
+          $('#vaga-'        +dataItem+ '-'           +c.horaItem).removeClass("alerta");
+        } else {
+          $('#btn-confirma-' +dataItem+'-'           +c.horaItem).attr('disabled', true);
+          $('#collapse'     +dataItem).find('.item-' +c.horaItem).addClass("cinza");
+          $('#vaga-'        +dataItem+ '-'           +c.horaItem).addClass("alerta");          
+        };
+
+        $('#badge-'+dataItem).text(--qtVagas);        
+      })    
+    }
+
+// (LISTA DE HORAS) Adiciona evento - Adiciona Consulta ----------------------------
+    $('.btn-plus').click(function(e){
+      e.preventDefault();
+
+      var nomeMedico = $('#seldoutor').val();
+      var idMedico   = $('#seldoutor').find( "option:selected" ).attr("data-id"); //sinistro
+
+      var data       = $(this).attr("data-data");
+      var hora       = $(this).attr("data-hora");
+      var dataItem   = $(this).attr("data-item");
+      var horaItem   = $(this).attr("data-vaga");
+
+      var tamanho    = nomeMedico.length;
+      nomeMedico     = nomeMedico.slice(4, tamanho);
+
+      $('#nomeMedico').val(nomeMedico);
+      $('#idMedico').val(idMedico);
+      $('#data').val(data);
+      $('#hora').val(hora);
+      $('#dataItem').val(dataItem);
+      $('#horaItem').val(horaItem);
+
+      $('#agendamento').html('<br/>Dr. '+nomeMedico+' - Data: '+data+' - Hora: '+hora);
+    }); 
+
+// (LISTA DE HORAS) Adiciona evento - Exclui Consulta ------------------------------
+    $('.btn-remove').click(function(e){
+      e.preventDefault();
+
+      var dataItem = $(this).attr('data-item');
+      var horaItem = $(this).attr('data-vaga');
+      var hora     = $(this).attr('data-hora');
+      var id       = $(this).attr('data-id-consulta');
+
+      var nomePaciente = $('#vaga-'+dataItem+'-'+horaItem).text();
+      var inicioNome   = nomePaciente.indexOf('Nome:');
+      var nomePaciente = nomePaciente.slice((inicioNome+6), nomePaciente.legth);
+
+      $('#modalExcluirData .pacienteNome').text(nomePaciente);
+      $('#modalExcluirData .horaConsulta').text(hora);
+      $('#modalExcluirData .btn-conf-exclusao').attr("data-id", id);
+      $('#modalExcluirData .btn-conf-exclusao').attr("data-dia", dataItem);
+      $('#modalExcluirData .btn-conf-exclusao').attr("data-hora", horaItem);
+    })
+
+    $('#modalExcluirData .btn-conf-exclusao').click(function(e){
+      e.preventDefault();
+
+      var dataItem = $(this).attr('data-dia');
+      var horaItem = $(this).attr('data-hora');
+
+      var request = $.ajax({
+        url: '/consultas/api/exclui-consulta',
+        method: 'DELETE',
+        data: { 
+          id: $(this).attr('data-id')
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        $('#btn-plus-'    +dataItem+'-'+horaItem).removeAttr("disabled");
+        $('#btn-confirma-'+dataItem+'-'+horaItem).removeAttr("disabled");
+    
+        $('#btn-confirma-'+dataItem+'-'+horaItem).removeAttr("data-id-consulta");
+        $('#btn-cafe-'    +dataItem+'-'+horaItem).removeAttr("data-id-consulta");        
+        $('#btn-remove-'  +dataItem+'-'+horaItem).removeAttr("data-id-consulta");
+    
+        $('#vaga-'        +dataItem+'-'+horaItem).text('');
+        $('#btn-plus-'    +dataItem+'-'+horaItem).removeAttr("disabled");
+        $('#btn-remove-'  +dataItem+'-'+horaItem).attr("disabled", true);
+        $('#btn-confirma-'+dataItem+'-'+horaItem).attr("disabled", true);
+
+        $('#collapse'     +dataItem).find('.item-' +horaItem).removeClass("cinza");
+        $('#vaga-'        +dataItem+'-'+horaItem).removeClass("alerta");
+        
+        var qtVagas = parseInt($('#badge-'+dataItem).text());
+        $('#badge-'+dataItem).text(++qtVagas);
+      });
+    });
+
+// (LISTA DE HORAS) Adiciona evento - Confirma Consulta ----------------------------
+    $('.btn-confirma').click(function(e){
+      e.preventDefault();
+
+      var dataItem = $(this).attr('data-item');
+      var horaItem = $(this).attr('data-vaga');
+
+      var request = $.ajax({
+        url: '/consultas/api/confirma-consulta',
+        method: 'POST',
+        data: { 
+          id: $(this).attr('data-id-consulta')
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        $('#btn-confirma-'+dataItem+'-'+horaItem).attr("disabled", true);
+      });
+    });
+
+// (LISTA DE HORAS) Adiciona evento - Cafezinho ------------------------------------
+$('.btn-cafe').click(function(e){
+  e.preventDefault();
+
+  var nomeMedico = $('#seldoutor').val();
+  var idMedico   = $('#seldoutor').find( "option:selected" ).attr("data-id"); 
+  var data       = $(this).attr('data-data');
+  var hora       = $(this).attr('data-hora');
+  var dataItem   = $(this).attr('data-item');
+  var horaItem   = $(this).attr('data-vaga');
+
+  var tamanho    = nomeMedico.length;
+  nomeMedico     = nomeMedico.slice(4, tamanho);
+
+  var request = $.ajax({
+    url: '/consultas/api/cafezinho-consulta',
+    method: 'POST',
+    data: { 
+      id: $(this).attr('data-id-consulta'),
+      medicoId: idMedico,
+      medicoNome: nomeMedico,
+      data: data,
+      hora: hora,
+      horaItem: horaItem
+    },
+    dataType: 'json'
+  });
+  request.done(function(dados){
+    $('#collapse'     +dataItem).find('.item-' +horaItem).removeClass("cinza");
+    $('#vaga-'        +dataItem+'-'+horaItem).removeClass("alerta");
+
+    $('#btn-plus-'    +dataItem+'-'+horaItem).removeAttr("disabled");
+    $('#btn-confirma-'+dataItem+'-'+horaItem).removeAttr("disabled");
+
+    $('#btn-confirma-'+dataItem+'-'+horaItem).removeAttr("data-id-consulta");
+    $('#btn-cafe-'    +dataItem+'-'+horaItem).removeAttr("data-id-consulta");        
+    $('#btn-remove-'  +dataItem+'-'+horaItem).removeAttr("data-id-consulta");
+
+    $('#btn-confirma-'+dataItem+'-'+horaItem).attr("disabled", true);
+    $('#btn-remove-'  +dataItem+'-'+horaItem).attr("disabled", true);
+
+    if (dados.consulta) {
+      $('#btn-plus-'    +dataItem+'-'+horaItem).attr("disabled", true);
+      $('#btn-confirma-'+dataItem+'-'+horaItem).removeAttr("disabled");
+      $('#btn-remove-'  +dataItem+'-'+horaItem).removeAttr("disabled");
+      $('#btn-confirma-'+dataItem+'-'+horaItem).attr("data-id-consulta", dados.consulta._id);
+      $('#btn-cafe-'    +dataItem+'-'+horaItem).attr("data-id-consulta", dados.consulta._id);        
+      $('#btn-remove-'  +dataItem+'-'+horaItem).attr("data-id-consulta", dados.consulta._id);
+
+      if (dados.consulta.confirmacao) {
+        $('#btn-confirma-'    +dataItem+'-'+horaItem).attr("disabled", true);
+      } 
+
+      if (dados.consulta.cafezinho) {
+        $('#collapse'         +dataItem).find('.item-' +horaItem).addClass("cinza");
+        $('#vaga-'            +dataItem+'-'+horaItem).addClass("alerta");
+        $('#btn-confirma-'    +dataItem+'-'+horaItem).attr("disabled", true);
+      } 
+
+      if (!dados.consulta.paciente) {
+        var qtVagas = parseInt($('#badge-'+dataItem).html());
+        $('#badge-'+dataItem).text(--qtVagas);
+      }
+
+    } else {      
+      var qtVagas = parseInt($('#badge-'+dataItem).text());
+      $('#badge-'+dataItem).text(++qtVagas);
+    }
+  });
+});
+
+// (MODAL) de Agendamento de Consulta ----------------------------------------------
+    var pagina            = 0;
+    var qtPaginas         = 0;
+    var qtPacientesPagina = 5;
+
+    var pacientes = [];
+
+    var request = $.ajax({
+      url: 'pacientes/api/todos',
+      method: 'GET',
+      data: {},
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      pacientes = dados.pacientes;
+      carregaPacientes();
+    });
+
+    $('#psq-nome').keyup(function(){
+      var request = $.ajax({
+        url: 'pacientes/api/nome',
+        method: 'POST',
+        data: { nome: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaPacientes();
+      })
+    });
+
+    $('#psq-telefone').keyup(function(){ 
+      var request = $.ajax({
+        url: 'pacientes/api/telefone',
+        method: 'POST',
+        data: { telefone: $(this).val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        pagina = 0;
+        pacientes = dados.pacientes;
+        carregaPacientes();
+      })
+    });
+
+    $('#proxima').click(function(e){
+      e.preventDefault();
+
+      if ((pagina+1) < qtPaginas) {
+        pagina++;
+        carregaPacientes();
+      }
+    });
+
+    $('#anterior').click(function(e){
+      e.preventDefault();
+
+      if (pagina != 0) {
+        pagina--;
+        carregaPacientes();
+      }
+    })
+
+    function carregaPacientes() {
+      $('#tabela').empty('');
+
+      var ini = pagina * qtPacientesPagina;
+      var fim = ini    + qtPacientesPagina;
+      
+      for(let i = ini; i < pacientes.length && i < fim ; i++) {
+        var paciente = pacientes[i];
+  
+        $('#tabela').append('<tr id="tr'+paciente._id+'">');
+  
+        $('#tr'+paciente._id).append('<td>'+paciente.nome+'</td>');
+        $('#tr'+paciente._id).append('<td>'+paciente.telefone+'</td>');
+        $('#tr'+paciente._id).append('<td id="td'+paciente._id+'">');
+  
+        $('#td'+paciente._id).append('<div class="botoes-direita" id="div'+paciente._id+'">');
+  
+        $('#div'+paciente._id).append('<button type="button" id="button'+ paciente._id +'" class="btn btn-success btn-xs marca-consulta" data-dismiss="modal" data-id="'+ paciente._id +'" data-nome="'+ paciente.nome+'" data-telefone="'+ paciente.telefone +'">');
+  
+        $('#button'+paciente._id).append('<span class="glyphicon glyphicon-saved"></span>');
+      };
+
+      //Controle paginação
+      qtPaginas = (pacientes.length / qtPacientesPagina);
+      qtPaginas = (pacientes.length % qtPacientesPagina != 0)? parseInt(qtPaginas + 1)  : parseInt(qtPaginas);
+
+      if ( (pagina + 1) >= qtPaginas) {
+        $('#proxima').addClass('disabled');
+      } else {
+        $('#proxima').removeClass('disabled');
+      };
+      
+      if (pagina == 0) {
+        $('#anterior').addClass('disabled');
+      } else {
+        $('#anterior').removeClass('disabled');
+      };
+
+      $('#atual').text(' Pág. '+(pagina + 1)+' ');
+
+      $('.marca-consulta').click(function(){
+        var nomePaciente     = $(this).attr("data-nome");
+        var idPaciente       = $(this).attr("data-id");
+        var telefonePaciente = $(this).attr("data-telefone");
+        marcaConsulta(nomePaciente, idPaciente, telefonePaciente);
+      })
+
+    };
+
+    function marcaConsulta(nomePaciente, idPaciente, telefonePaciente) {
+      var data     = $('#data').val();
+      var hora     = $('#hora').val();
+      var dataItem = $('#dataItem').val();
+      var horaItem = $('#horaItem').val();
+
+      var request = $.ajax({
+        url: '/consultas/api/nova-consulta',
+        method: 'POST',
+        data: { 
+          medicoId: $('#idMedico').val(),
+          medicoNome: $('#nomeMedico').val(),
+          pacienteId: idPaciente,
+          pacienteNome: nomePaciente,
+          pacienteTelefone: telefonePaciente,
+          data: data,
+          hora: hora,
+          horaItem: horaItem
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        $('#vaga-'        +dataItem+'-'+horaItem).html('Telefone: '+telefonePaciente+' - Nome: '+nomePaciente);
+        
+        $('#btn-plus-'    +dataItem+'-'+horaItem).attr("disabled", true);
+        
+        $('#btn-remove-'  +dataItem+'-'+horaItem).removeAttr("disabled");
+        $('#btn-confirma-'+dataItem+'-'+horaItem).removeAttr("disabled");
+
+        $('#btn-remove-'  +dataItem+'-'+horaItem).attr("data-id-consulta", dados.consulta._id);
+        $('#btn-cafe-'    +dataItem+'-'+horaItem).attr("data-id-consulta", dados.consulta._id);
+        $('#btn-confirma-'+dataItem+'-'+horaItem).attr("data-id-consulta", dados.consulta._id);
+
+        var qtVagas = parseInt($('#badge-'+dataItem).text());
+        $('#badge-'+dataItem).text(--qtVagas);
+      })
+
+    };
+
+  })
+
+
+</script>

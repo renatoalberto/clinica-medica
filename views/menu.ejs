@@ -1,0 +1,26 @@
+<nav class="navbar">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <span class="navbar-brand"><a href="/">Sistema de Gestão - Clínica Médica</a></span>
+    </div>
+    <ul class="nav navbar-nav">
+      <% if(usuario.nome != '') { %>
+        <li><a href="/pacientes">Pacientes</a></li>
+        <li><a href="/consultas">Marcação de Consultas</a></li>
+
+        <% if(usuario.funcao == "Médico" || usuario.admin == 'true') { %>
+          <li><a href="/atendimento">Atendimento</a></li>
+        <% } %>
+
+      <% } %>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="navbar-text"> <%= usuario.nome %></li>
+      <% if(usuario.nome == '') { %>
+      <li><a href="/login">Login</a></li>
+      <% } else { %>
+      <li><a href="/logout">Logout</a></li>
+      <% } %>
+    </ul>
+  </div>
+</nav>
