@@ -170,6 +170,14 @@
 <!-- Modal de lista de Medicamentos -->    
 <%- include('pesquisaMedicamento') %>  
 
+<!--
+<button id="excluiMedicamentos">Excluir medicamentos</button>
+<button id="carregaMedicamentos">Carrega medicamentos</button>
+<div id="resultado">
+<%- include('medicamentos') %>
+</div>
+-->
+
 <%- include('../rodape') %>
 
 <script>
@@ -203,9 +211,22 @@ $(document).ready(function(){
       },
       dataType: 'json'
     });
-    request.done(function(dados){});
+    request.done(function(dados){
+      console.log(dados.mensagem);
+    });
   });
 
+  $('#excluiMedicamentos').click(function(){  
+    var request = $.ajax({
+      url: 'medicamentos/api/excluitodos',
+      method: 'DELETE',
+      data: {},
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      console.log(dados.mensagem);
+    });
+  });
 // (Carrega horário de início de atendimento) click seleção do paciente ------------
   $('#nome').on('mudouNome', function() {
     var request = $.ajax({

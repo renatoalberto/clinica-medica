@@ -18,7 +18,14 @@ medicamentosRouter.use('/', function(req, res, next){
     next();
   }
   
-})
+});
+
+medicamentosRouter.delete('/api/excluitodos', function(req, res){
+  MedicamentoModel.deleteMany({}, function(erro) {
+    var mensagem = {tipo: 2, erro: 'Sucesso!', texto: 'Medicamentos excluidos.'}
+    res.json({mensagem: mensagem})
+  })
+});
 
 medicamentosRouter.post('/api/inicio', urlEncodedParser, function(req, res){
   var quantidade = req.body.qtPorPagina;
@@ -29,7 +36,7 @@ medicamentosRouter.post('/api/inicio', urlEncodedParser, function(req, res){
     res.json({medicamentos: medicamentos});
   });
 
-})
+});
 
 medicamentosRouter.post('/api/paginacao', urlEncodedParser, function(req, res){
   var nome         = req.body.nome.toUpperCase();
@@ -55,6 +62,10 @@ medicamentosRouter.post('/api/carregamedicamentos', urlEncodedParser, function(r
   var medicamentos = JSON.parse(dados);
 
   medicamentos.forEach(function(m){
+
+    m['PRINCIPIO ATIVO'] = m['PRINCIPIO ATIVO'].replace(/;/g,"; "); //colocar espaço após ;
+    m.PRODUTO            = m.PRODUTO.replace(/\u002B/g," + ");      //colocar espaço após +
+    m.PRODUTO            = m.PRODUTO.replace(/  \u002B  /g," \u002B ");  //retira exesso de espaço
 
     var medicamento = new MedicamentoModel({
       nome: m.PRODUTO,

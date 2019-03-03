@@ -23,6 +23,7 @@ profissionaisRouter.use('/', function(req, res, next){
 profissionaisRouter.get('/', function(req, res) {
   ProfissionalModel.find(null, null, {sort: {nome: 1}}, function(erro, profissionais){
     if(erro) console.error(erro);
+
     res.render('admin/profissionais', {usuario: req.app.locals.usuarioLogado(req), profissionais: profissionais, mensagem: null})
   })
 });
