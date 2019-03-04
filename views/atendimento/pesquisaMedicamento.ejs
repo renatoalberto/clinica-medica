@@ -39,9 +39,11 @@
             </nav>
 
           </div>
+
           <div class="modal-footer clear">        
             <button type="button" data-dismiss="modal" class="btn btn-default" >Fechar</button>
           </div>
+
         </div>
       </div>      
     </div>
@@ -94,16 +96,30 @@
     var paginaAtual   = 1;
     const qtPorPagina = 5;
 
-    var request = $.ajax({
-      url: 'medicamentos/api/inicio',
-      method: 'POST',
-      data: {
-        qtPorPagina: qtPorPagina
-      },
-      dataType: 'json'
+    $('#modalPesquisaMedicamento').on('hidden.bs.modal', function () {
+      $('#medicamento').val('');
+      $('#psq-med-nome').val('');
+      $('#psq-apresentacao').val('');  
     });
-    request.done(function(dados){
-      carregaMedicamentos(dados.medicamentos);
+
+    $('#modalPesquisaMedicamento').on('show.bs.modal', function () {
+      var nome         = $('#psq-med-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+      },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados.medicamentos);
+      });
     });
 
     $('#pagMedAnt').click(function(e){

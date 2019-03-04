@@ -168,15 +168,7 @@
 <%- include('../pacientes/pesquisaPaciente') %>  
 
 <!-- Modal de lista de Medicamentos -->    
-<%- include('pesquisaMedicamento') %>  
-
-<!--
-<button id="excluiMedicamentos">Excluir medicamentos</button>
-<button id="carregaMedicamentos">Carrega medicamentos</button>
-<div id="resultado">
-<%- include('medicamentos') %>
-</div>
--->
+<%- include('pesquisaMedicamento') %> 
 
 <%- include('../rodape') %>
 
@@ -384,7 +376,9 @@ $(document).ready(function(){
 // (Informado Nome Medicamento) trasfere tratamento para modal ---------------------
   $('#medicamento').keyup(function(e){
 
-    if(e.key == "Backspace" || e.key == "Delete") {
+    //Números - 48 a 57
+    //Letras  - 65 a 90
+    if(!((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90))) {
       return null;
     }
     

@@ -27,27 +27,16 @@ medicamentosRouter.delete('/api/excluitodos', function(req, res){
   })
 });
 
-medicamentosRouter.post('/api/inicio', urlEncodedParser, function(req, res){
-  var quantidade = req.body.qtPorPagina;
-  ++quantidade;
-  
-  MedicamentoModel.find(null, null, {limit: quantidade}, function(erro, medicamentos){
-    if(erro) return console.error(erro);
-    res.json({medicamentos: medicamentos});
-  });
-
-});
-
 medicamentosRouter.post('/api/paginacao', urlEncodedParser, function(req, res){
   var nome         = req.body.nome.toUpperCase();
   var apresentacao = req.body.apresentacao.toUpperCase();
 
-  var quantidade = req.body.qtPorPagina;
-  var pagAtual   = req.body.paginaAtual;
-  var pular      = (pagAtual * quantidade) - quantidade;
+  var quantidade   = req.body.qtPorPagina;
+  var pagAtual     = req.body.paginaAtual;
+  var pular        = (pagAtual * quantidade) - quantidade;
 
   ++quantidade;
-  
+
   MedicamentoModel.find({ nome: {'$regex': nome}, apresentacao: {'$regex': apresentacao} }, null, {limit: quantidade, skip: pular}, function(erro, medicamentos){
     if(erro) return console.error(erro);
     res.json({medicamentos: medicamentos});
