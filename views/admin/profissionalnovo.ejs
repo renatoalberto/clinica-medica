@@ -21,3 +21,49 @@
  </div>
 
 <%- include('../rodape') %>
+
+<script>
+  $(document).ready(function(e){
+  // (Botão Novo Atendimento) --------------------------------------------------------
+    $('button[type="submit"]').click(function(e){
+      var invalido = false;
+
+      if ($('#nome').val() == '') {
+        $('#nome').attr('data-erro', true);
+        setTimeout(function(){ $('#nome').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
+
+      if ($('#email').val() == '') {
+        $('#email').attr('data-erro', true);
+        setTimeout(function(){ $('#email').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
+
+      if ($('#telefone').val() == '') {
+        $('#telefone').attr('data-erro', true);
+        setTimeout(function(){ $('#telefone').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
+
+      if ($('#senha').val() == '') {
+        $('#senha').attr('data-erro', true);
+        setTimeout(function(){ $('#senha').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
+
+      if (invalido) {        
+        e.preventDefault();
+
+        $('#caixaAlerta').empty();
+        
+        $('#caixaAlerta').append('<div class="alert alert-danger alert-dismissible" role="alert">');
+        $('#caixaAlerta .alert').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+        $('#caixaAlerta .alert').append('<strong>Atenção! </strong>Informe todos os campos obrigatórios.');      
+    
+        $('#caixaAlerta .alert').delay( 4000 ).slideUp( 400 );
+      };
+      
+    })
+  })
+</script>

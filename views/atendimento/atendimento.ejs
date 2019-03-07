@@ -15,15 +15,15 @@
         
         <div class="form-group col-sm-4">
           <label for="nome">Nome</label>
-          <input type="text" class="form-control" id="nome" readonly>
+          <input type="text" class="form-control" id="nome" readonly required>
         </div>
         <div class="form-group col-sm-4">
           <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" readonly>
+          <input type="email" class="form-control" id="email" readonly required>
         </div>
         <div class="form-group col-sm-4">
           <label for="telefone">Telefone</label>
-          <input type="text" class="form-control" id="telefone" readonly>
+          <input type="text" class="form-control" id="telefone" readonly required>
         </div>
         <input type="hidden" id="pacienteId">
         <input type="hidden" id="dataAtendimento">
@@ -56,7 +56,7 @@
         <input type="hidden" id="atendimentoId">
         <div class="form-group col-xs-12">
           <label for="queixa">Queixa</label>
-          <textarea class="form-control" rows="3" id="queixa"></textarea>
+          <textarea class="form-control" rows="3" id="queixa" required></textarea>
         </div>
         <div class="form-group col-xs-12">
           <label for="diagnostico">Diagnóstico</label>
@@ -93,8 +93,8 @@
             <legend>
               <div class="row">
                 <div class="col-xs-4">Exames</div>
-                <div class="input-group col-xs-7   desgruda">
-                  <input type="text" class="form-control" id="exame">
+                <div class="input-group col-xs-7 desgruda">
+                  <input type="text" class="form-control validacao" id="exame">
                   <span class="input-group-btn">
                     <button class="btn btn-default" id="novoExame"><span class="glyphicon glyphicon-saved"></span></button>
                   </span>
@@ -358,6 +358,13 @@ $(document).ready(function(){
 // (Novo Exame) trata clique para inclusão de novo exame ---------------------------
   $('#novoExame').click(function(){
     var exame = $('#exame').val();
+
+    if (exame == '') {
+      $('#exame').attr('data-erro', true);
+      setTimeout(function(){ $('#exame').removeAttr('data-erro'); }, 3000);
+      return false;
+    }
+
     $('#linha-exame .nome-exame').html(exame);
 
     $('#linha-exame input[name=recebido]').eq(0).trigger('click');
@@ -421,6 +428,10 @@ $(document).ready(function(){
 
 // (Grava atendimento) -------------------------------------------------------------
   $('#salvaAtendimento').click(function(){
+    if (!validaCampos()) {      
+      return false;
+    }
+ 
     var atendimentoId    = $('#atendimentoId').val();
     var pacienteId       = $('#pacienteId').val();
     var pacienteNome     = $('#nome').val();
@@ -476,6 +487,48 @@ $(document).ready(function(){
 
   });
 
+  function validaCampos() {
+    var invalido = false;
+
+    if ($('#nome').val() == '') {
+      $('#nome').attr('data-erro', true);
+      setTimeout(function(){ $('#nome').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+
+    if ($('#email').val() == '') {
+      $('#email').attr('data-erro', true);
+      setTimeout(function(){ $('#email').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+
+    if ($('#telefone').val() == '') {
+      $('#telefone').attr('data-erro', true);
+      setTimeout(function(){ $('#telefone').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+
+    if ($('#queixa').val() == '') {
+      $('#queixa').attr('data-erro', true);
+      setTimeout(function(){ $('#queixa').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+
+    if (invalido) {      
+      dados = {
+        mensagem: {
+          tipo: 4,
+          erro: 'Atenção!',
+          texto: 'Informe todos os campos obrigatórios.'
+        }
+      }
+      
+      trataAlerta(dados);
+    };
+
+    return !invalido;
+  }
+
   function trataAlerta(dados) {
     var tipoAlerta = '';
 
@@ -485,6 +538,8 @@ $(document).ready(function(){
       tipoAlerta = 'alert-danger';
     }
 
+    $('.caixaAlerta').empty();
+    
     $('.caixaAlerta').append('<div class="alert '+tipoAlerta+' alert-dismissible" role="alert">');
     $('.caixaAlerta .alert').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
     $('.caixaAlerta .alert').append('<strong>'+dados.mensagem.erro+'</strong> '+dados.mensagem.texto);      
