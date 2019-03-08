@@ -15,6 +15,8 @@ var ProfissionalModel = require('./models/profissionalModel');
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/clinica', { useNewUrlParser: true });
+//mongoose.connect('mongodb://renato.alb:Casa131232@kamino.mongodb.umbler.com:37173/clinica', { useNewUrlParser: true });
+//mongoose.connect('mongodb://renato.alb:Casa131232@mongo_clinica:27017/clinica', { useNewUrlParser: true });
 
 var moment = require('moment');
 moment.locale('pt-br');

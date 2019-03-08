@@ -160,6 +160,25 @@
     var paginaAcordeon    = 1;
     var primeiraDataLista = [];
 
+// (Pesquisa Paciente) no click dos campos em branco -------------------------------
+    $('#nome').click(function(){
+      if ($(this).val() == '') {
+        $('#psqPaciente').trigger('click');
+      }
+    });
+
+    $('#email').click(function(){
+      if ($(this).val() == '') {
+        $('#psqPaciente').trigger('click');
+      }
+    });
+
+    $('#telefone').click(function(){
+      if ($(this).val() == '') {
+        $('#psqPaciente').trigger('click');
+      }
+    });    
+
 // (Mudou e Paciente Pesquisado) Executado após seleção da modal--------------------
     $('#nome').on('mudouNome', function() {
       var request = $.ajax({

@@ -173,66 +173,33 @@
 <%- include('../rodape') %>
 
 <script>
-$(document).ready(function(){
-// (Botão Novo Atendimento) --------------------------------------------------------
-  $('#atendimentoNovo').click(function(){
-    var data = $('#textoDataAtendimento').text();
-    var hora = $('#textoHoraAtendimento').text();
-
-    $('#dataAtendimento').val(data);
-    $('#horaAtendimento').val(hora);
-
-    $('#atendimentoId').val('');
-    $('#queixa').val('');
-    $('#diagnostico').val('');
-    $('#corpoTabExames tr').remove();
-    $('#corpoTabMedicamentos tr').remove();
-
-    buscaHistoricoPaciente();
-  });
-
-// (Botão Carrega Medicamentos) ----------------------------------------------------
-  $('#carregaMedicamentos').click(function(){
-    var dados = $('#resultado').text();
-  
-    var request = $.ajax({
-      url: 'medicamentos/api/carregamedicamentos',
-      method: 'POST',
-      data: {
-        medicamentos: dados
-      },
-      dataType: 'json'
+  $(document).ready(function(){
+  // (Pesquisa Paciente) no click dos campos em branco -------------------------------
+    $('#nome').click(function(){
+      if ($(this).val() == '') {
+        $('#psqPaciente').trigger('click');
+      }
     });
-    request.done(function(dados){
-      console.log(dados.mensagem);
-    });
-  });
 
-  $('#excluiMedicamentos').click(function(){  
-    var request = $.ajax({
-      url: 'medicamentos/api/excluitodos',
-      method: 'DELETE',
-      data: {},
-      dataType: 'json'
+    $('#email').click(function(){
+      if ($(this).val() == '') {
+        $('#psqPaciente').trigger('click');
+      }
     });
-    request.done(function(dados){
-      console.log(dados.mensagem);
+
+    $('#telefone').click(function(){
+      if ($(this).val() == '') {
+        $('#psqPaciente').trigger('click');
+      }
     });
-  });
-// (Carrega horário de início de atendimento) click seleção do paciente ------------
-  $('#nome').on('mudouNome', function() {
-    var request = $.ajax({
-      url: 'atendimento/api/horario',
-      method: 'GET',
-      data: {},
-      dataType: 'json'
-    });
-    request.done(function(dados){
-      $('#dataAtendimento').val(dados.data);
-      $('#horaAtendimento').val(dados.hora);
-      $('#textoDataAtendimento').text(dados.data);
-      $('#textoHoraAtendimento').text(dados.hora);
-      $('#inicioAtendimento').removeAttr('hidden');
+
+  // (Botão Novo Atendimento) --------------------------------------------------------
+    $('#atendimentoNovo').click(function(){
+      var data = $('#textoDataAtendimento').text();
+      var hora = $('#textoHoraAtendimento').text();
+
+      $('#dataAtendimento').val(data);
+      $('#horaAtendimento').val(hora);
 
       $('#atendimentoId').val('');
       $('#queixa').val('');
@@ -242,70 +209,121 @@ $(document).ready(function(){
 
       buscaHistoricoPaciente();
     });
-  });
 
-  function buscaHistoricoPaciente() {
-    var request = $.ajax({
-      url: 'atendimento/api/historico/'+$('#pacienteId').val()+'/'+$('#nome').val(),
-      method: 'GET',      
-      dataType: 'json'
-    });
-    request.done(function(dados){
-      $('#lista-consultas li').remove();
-
-      dados.atendimentos.forEach(function(dado){
-        $('#lista-consultas-oculta .historico').text(dado.data +' - '+ dado.hora +' - Dr. '+ dado.medico.nome);
-        $('#lista-consultas-oculta .historico').attr('data-data', dado.data);
-        $('#lista-consultas-oculta .historico').attr('data-hora', dado.hora);
-        $('#lista-consultas-oculta .historico').attr('data-id', dado._id);
-  
-        var linha = $('#lista-consultas-oculta').html();
-        $('#lista-consultas').append(linha);
-      });
-
-      trataSelecaoHistorico();
-    });
-  }
-
-  function trataSelecaoHistorico() {
-    $('#lista-consultas a').click(function(e){
-      e.preventDefault();
-      
-      var consultaId = $(this).attr('data-id');
-
+  // (Botão Carrega Medicamentos) ----------------------------------------------------
+    $('#carregaMedicamentos').click(function(){
+      var dados = $('#resultado').text();
+    
       var request = $.ajax({
-        url: 'atendimento/api/historico/'+consultaId,
+        url: 'medicamentos/api/carregamedicamentos',
+        method: 'POST',
+        data: {
+          medicamentos: dados
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        console.log(dados.mensagem);
+      });
+    });
+
+    $('#excluiMedicamentos').click(function(){  
+      var request = $.ajax({
+        url: 'medicamentos/api/excluitodos',
+        method: 'DELETE',
+        data: {},
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        console.log(dados.mensagem);
+      });
+    });
+  // (Carrega horário de início de atendimento) click seleção do paciente ------------
+    $('#nome').on('mudouNome', function() {
+      var request = $.ajax({
+        url: 'atendimento/api/horario',
         method: 'GET',
         data: {},
         dataType: 'json'
       });
       request.done(function(dados){
-        $('#atendimentoId').val(dados.atendimento._id);
-        $('#queixa').val(dados.atendimento.queixa);
-        $('#diagnostico').val(dados.atendimento.diagnostico);
-        $('#dataAtendimento').val(dados.atendimento.data);
-        $('#horaAtendimento').val(dados.atendimento.hora);
-        $('#corpoTabExames tr').remove();
-        $('#corpoTabMedicamentos tr').remove();              
-        $('#exame').val('');
-        $('#medicamento').val('');
+        $('#dataAtendimento').val(dados.data);
+        $('#horaAtendimento').val(dados.hora);
+        $('#textoDataAtendimento').text(dados.data);
+        $('#textoHoraAtendimento').text(dados.hora);
+        $('#inicioAtendimento').removeAttr('hidden');
 
-        //lista de medicamentos
-        dados.atendimento.medicamentos.forEach(function(m){
-          $('#linha-medicamento .medicamento-nome').text(m.nome);
-          $('#linha-medicamento .medicamento-apresentacao').text(m.apresentacao);
-  
-          $('#linha-medicamento .medicamento-info').attr('data-id',m._id);
-          $('#linha-medicamento .medicamento-info').attr('data-nome',m.nome);
-          $('#linha-medicamento .medicamento-info').attr('data-laboratorio',m.laboratorio);
-          $('#linha-medicamento .medicamento-info').attr('data-princ-ativo',m.pricipioAtivo);
-          $('#linha-medicamento .medicamento-info').attr('data-apresentacao',m.apresentacao);
-          $('#linha-medicamento .medicamento-info').attr('data-classe-terapeutica',m.classeTerapeutica);
-          
-          var linha = $('#linha-medicamento').html();
-          $('#corpoTabMedicamentos').prepend(linha);
-          
-          $('#corpoTabMedicamentos .medicamento-info').eq(0).click(function(){           
+        $('#atendimentoId').val('');
+        $('#queixa').val('');
+        $('#diagnostico').val('');
+        $('#corpoTabExames tr').remove();
+        $('#corpoTabMedicamentos tr').remove();
+
+        buscaHistoricoPaciente();
+      });
+    });
+
+    function buscaHistoricoPaciente() {
+      var request = $.ajax({
+        url: 'atendimento/api/historico/'+$('#pacienteId').val()+'/'+$('#nome').val(),
+        method: 'GET',      
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        $('#lista-consultas li').remove();
+
+        dados.atendimentos.forEach(function(dado){
+          $('#lista-consultas-oculta .historico').text(dado.data +' - '+ dado.hora +' - Dr. '+ dado.medico.nome);
+          $('#lista-consultas-oculta .historico').attr('data-data', dado.data);
+          $('#lista-consultas-oculta .historico').attr('data-hora', dado.hora);
+          $('#lista-consultas-oculta .historico').attr('data-id', dado._id);
+    
+          var linha = $('#lista-consultas-oculta').html();
+          $('#lista-consultas').append(linha);
+        });
+
+        trataSelecaoHistorico();
+      });
+    }
+
+    function trataSelecaoHistorico() {
+      $('#lista-consultas a').click(function(e){
+        e.preventDefault();
+        
+        var consultaId = $(this).attr('data-id');
+
+        var request = $.ajax({
+          url: 'atendimento/api/historico/'+consultaId,
+          method: 'GET',
+          data: {},
+          dataType: 'json'
+        });
+        request.done(function(dados){
+          $('#atendimentoId').val(dados.atendimento._id);
+          $('#queixa').val(dados.atendimento.queixa);
+          $('#diagnostico').val(dados.atendimento.diagnostico);
+          $('#dataAtendimento').val(dados.atendimento.data);
+          $('#horaAtendimento').val(dados.atendimento.hora);
+          $('#corpoTabExames tr').remove();
+          $('#corpoTabMedicamentos tr').remove();              
+          $('#exame').val('');
+          $('#medicamento').val('');
+
+          //lista de medicamentos
+          dados.atendimento.medicamentos.forEach(function(m){
+            $('#linha-medicamento .medicamento-nome').text(m.nome);
+            $('#linha-medicamento .medicamento-apresentacao').text(m.apresentacao);
+    
+            $('#linha-medicamento .medicamento-info').attr('data-id',m._id);
+            $('#linha-medicamento .medicamento-info').attr('data-nome',m.nome);
+            $('#linha-medicamento .medicamento-info').attr('data-laboratorio',m.laboratorio);
+            $('#linha-medicamento .medicamento-info').attr('data-princ-ativo',m.pricipioAtivo);
+            $('#linha-medicamento .medicamento-info').attr('data-apresentacao',m.apresentacao);
+            $('#linha-medicamento .medicamento-info').attr('data-classe-terapeutica',m.classeTerapeutica);
+            
+            var linha = $('#linha-medicamento').html();
+            $('#corpoTabMedicamentos').prepend(linha);
+                    
             $('#detMedicamento .nome').text(m.nome);
             $('#detMedicamento .laboratorio').text(m.laboratorio);
             $('#detMedicamento .pricAtivo').text(m.pricipioAtivo);
@@ -314,238 +332,233 @@ $(document).ready(function(){
             
             var detalhes = $('#detMedicamento').html();
             
-            $(this).attr('data-content', detalhes);
-            $(this).popover('toggle');
+            $('#corpoTabMedicamentos .medicamento-info').eq(0).attr('data-content', detalhes);          
           });
-        });
 
-        $('#corpoTabMedicamentos .medicamento-info').trigger('click');
-        $('#corpoTabMedicamentos .medicamento-info').trigger('click');
-        $('#corpoTabMedicamentos .medicamento-info').trigger('click');
+          $('[data-toggle="popover"]').popover();
 
-        $('#corpoTabMedicamentos .medicamento-exclui').click(function(){
-          $('#corpoTabMedicamentos tr').has(this).remove();
-        });
+          $('#corpoTabMedicamentos .medicamento-exclui').click(function(){
+            $('#corpoTabMedicamentos tr').has(this).remove();
+          });
 
-        //lista de exames        
-        dados.atendimento.exames.forEach(function(e){        
-          $('#linha-exame .nome-exame').html(e.nome);
+          //lista de exames        
+          dados.atendimento.exames.forEach(function(e){        
+            $('#linha-exame .nome-exame').html(e.nome);
+            
+            if(e.exameRecebido) {
+              $('#linha-exame input[name=recebido]').eq(1).trigger('click');
+            } else {
+              $('#linha-exame input[name=recebido]').eq(0).trigger('click');
+            }
+
+            if (e.exameEntreguePaciente) {
+              $('#linha-exame input[name=entregue]').eq(1).trigger('click');
+            } else {
+              $('#linha-exame input[name=entregue]').eq(0).trigger('click');
+            };
+            
+            var linha = $('#linha-exame').html();
+            $('#corpoTabExames').prepend(linha);    
+          });
+    
+          $('#corpoTabExames .exclui-exame').click(function(){
+            $('#corpoTabExames tr').has(this).remove();
+          });
+        });      
           
-          if(e.exameRecebido) {
-            $('#linha-exame input[name=recebido]').eq(1).trigger('click');
-          } else {
-            $('#linha-exame input[name=recebido]').eq(0).trigger('click');
-          }
-
-          if (e.exameEntreguePaciente) {
-            $('#linha-exame input[name=entregue]').eq(1).trigger('click');
-          } else {
-            $('#linha-exame input[name=entregue]').eq(0).trigger('click');
-          };
-          
-          var linha = $('#linha-exame').html();
-          $('#corpoTabExames').prepend(linha);    
-        });
-  
-        $('#corpoTabExames .exclui-exame').click(function(){
-          $('#corpoTabExames tr').has(this).remove();
-        });
       });
-        
-    });
-  };
-  
-// (Novo Exame) trata clique para inclusão de novo exame ---------------------------
-  $('#novoExame').click(function(){
-    var exame = $('#exame').val();
-
-    if (exame == '') {
-      $('#exame').attr('data-erro', true);
-      setTimeout(function(){ $('#exame').removeAttr('data-erro'); }, 3000);
-      return false;
-    }
-
-    $('#linha-exame .nome-exame').html(exame);
-
-    $('#linha-exame input[name=recebido]').eq(0).trigger('click');
-    $('#linha-exame input[name=entregue]').eq(0).trigger('click');
+    };
     
-    var linha = $('#linha-exame').html();
-    $('#corpoTabExames').prepend(linha);
-    
-    $('#exame').val('');
+  // (Novo Exame) trata clique para inclusão de novo exame ---------------------------
+    $('#novoExame').click(function(){
+      var exame = $('#exame').val();
 
-    $('#corpoTabExames .exclui-exame').click(function(){
-      $('#corpoTabExames tr').has(this).remove();
-    })
-  })
+      if (exame == '') {
+        $('#exame').attr('data-erro', true);
+        setTimeout(function(){ $('#exame').removeAttr('data-erro'); }, 3000);
+        return false;
+      }
 
-// (Informado Nome Medicamento) trasfere tratamento para modal ---------------------
-  $('#medicamento').keyup(function(e){
+      $('#linha-exame .nome-exame').html(exame);
 
-    //Números - 48 a 57
-    //Letras  - 65 a 90
-    if(!((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90))) {
-      return null;
-    }
-    
-    //posicionar cursor após conclusão da transição da modal - (shown)
-    $('#modalPesquisaMedicamento').on('shown.bs.modal', function () {
-      $('#psq-med-nome').focus();
-      $('#psq-med-nome').trigger('keyup');
-    })
-
-    var medicamento = $(this).val();
-    $('#modalPesquisaMedicamento').modal('show');
-    $('#psq-med-nome').val(medicamento);
-  })
-
-// (Excluir atendimento) -----------------------------------------------------------
-  $('#excluirAtendimento').click(function(){
-    var atendimentoId = $('#atendimentoId').val();
-
-    if ( atendimentoId == '') {
-
-      var dados = {mensagem: {tipo: 4, erro: 'Atenção!', texto: 'Não existe atendimento para excluir.'}};
-      trataAlerta(dados);
+      $('#linha-exame input[name=recebido]').eq(0).trigger('click');
+      $('#linha-exame input[name=entregue]').eq(0).trigger('click');
       
-    } else {
+      var linha = $('#linha-exame').html();
+      $('#corpoTabExames').prepend(linha);
+      
+      $('#exame').val('');
+
+      $('#corpoTabExames .exclui-exame').click(function(){
+        $('#corpoTabExames tr').has(this).remove();
+      })
+    })
+
+  // (Informado Nome Medicamento) trasfere tratamento para modal ---------------------
+    $('#medicamento').keyup(function(e){
+
+      //Números - 48 a 57
+      //Letras  - 65 a 90
+      if(!((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90))) {
+        return null;
+      }
+      
+      //posicionar cursor após conclusão da transição da modal - (shown)
+      $('#modalPesquisaMedicamento').on('shown.bs.modal', function () {
+        $('#psq-med-nome').focus();
+        $('#psq-med-nome').trigger('keyup');
+      })
+
+      var medicamento = $(this).val();
+      $('#modalPesquisaMedicamento').modal('show');
+      $('#psq-med-nome').val(medicamento);
+    })
+
+  // (Excluir atendimento) -----------------------------------------------------------
+    $('#excluirAtendimento').click(function(){
+      var atendimentoId = $('#atendimentoId').val();
+
+      if ( atendimentoId == '') {
+
+        var dados = {mensagem: {tipo: 4, erro: 'Atenção!', texto: 'Não existe atendimento para excluir.'}};
+        trataAlerta(dados);
+        
+      } else {
+
+        var request = $.ajax({
+          url: 'atendimento/api/exclui/'+atendimentoId,
+          method: 'GET',
+          data: {},
+          dataType: 'json'
+        });
+        request.done(function(dados){
+          trataAlerta(dados);
+        });
+
+        $('#atendimentoNovo').trigger('click');
+      }
+    })
+
+  // (Grava atendimento) -------------------------------------------------------------
+    $('#salvaAtendimento').click(function(){
+      if (!validaCampos()) {      
+        return false;
+      }
+  
+      var atendimentoId    = $('#atendimentoId').val();
+      var pacienteId       = $('#pacienteId').val();
+      var pacienteNome     = $('#nome').val();
+      var data             = $('#dataAtendimento').val();
+      var hora             = $('#horaAtendimento').val();
+      var queixa           = $('#queixa').val();
+      var diagnostico      = $('#diagnostico').val();
+      var medicamentos     = [];
+      var exames           = [];
+
+      $('#corpoTabMedicamentos .medicamento-info').each(function(index){
+        medicamentos[index] = {
+          id:                $(this).attr('data-id'),
+          nome:              $(this).attr('data-nome'),
+          laboratorio:       $(this).attr('data-laboratorio'),
+          pricipioAtivo:     $(this).attr('data-princ-ativo'),
+          apresentacao:      $(this).attr('data-apresentacao'),
+          classeTerapeutica: $(this).attr('data-classe-terapeutica'),
+          genericos: []
+        }
+      });
+
+      $('#corpoTabExames tr').each(function(index){
+        exames[index] = {
+          nome:                  $(this).find('.nome-exame').text(),
+          exameRecebido:         $(this).find('.exameRecebido').hasClass('active'),
+          exameEntreguePaciente: $(this).find('.exameEntregue').hasClass('active')
+        }
+      });
 
       var request = $.ajax({
-        url: 'atendimento/api/exclui/'+atendimentoId,
-        method: 'GET',
-        data: {},
+        url: 'atendimento/api/gravaatendimento/'+atendimentoId,
+        method: 'POST',
+        data: {        
+          pacienteId: pacienteId,
+          pacienteNome: pacienteNome,
+          data: data,
+          hora: hora,
+          queixa: queixa,
+          diagnostico: diagnostico,
+          medicamentos: medicamentos,
+          exames: exames
+        },
         dataType: 'json'
       });
       request.done(function(dados){
+        if (dados.atendimento._id) {
+          $('#atendimentoId').val(dados.atendimento._id);
+        };
+
         trataAlerta(dados);
       });
 
-      $('#atendimentoNovo').trigger('click');
-
-    }
-  })
-
-// (Grava atendimento) -------------------------------------------------------------
-  $('#salvaAtendimento').click(function(){
-    if (!validaCampos()) {      
-      return false;
-    }
- 
-    var atendimentoId    = $('#atendimentoId').val();
-    var pacienteId       = $('#pacienteId').val();
-    var pacienteNome     = $('#nome').val();
-    var data             = $('#dataAtendimento').val();
-    var hora             = $('#horaAtendimento').val();
-    var queixa           = $('#queixa').val();
-    var diagnostico      = $('#diagnostico').val();
-    var medicamentos     = [];
-    var exames           = [];
-
-    $('#corpoTabMedicamentos .medicamento-info').each(function(index){
-      medicamentos[index] = {
-        id:                $(this).attr('data-id'),
-        nome:              $(this).attr('data-nome'),
-        laboratorio:       $(this).attr('data-laboratorio'),
-        pricipioAtivo:     $(this).attr('data-princ-ativo'),
-        apresentacao:      $(this).attr('data-apresentacao'),
-        classeTerapeutica: $(this).attr('data-classe-terapeutica'),
-        genericos: []
-      }
     });
 
-    $('#corpoTabExames tr').each(function(index){
-      exames[index] = {
-        nome:                  $(this).find('.nome-exame').text(),
-        exameRecebido:         $(this).find('.exameRecebido').hasClass('active'),
-        exameEntreguePaciente: $(this).find('.exameEntregue').hasClass('active')
-      }
-    });
+    function validaCampos() {
+      var invalido = false;
 
-    var request = $.ajax({
-      url: 'atendimento/api/gravaatendimento/'+atendimentoId,
-      method: 'POST',
-      data: {        
-        pacienteId: pacienteId,
-        pacienteNome: pacienteNome,
-        data: data,
-        hora: hora,
-        queixa: queixa,
-        diagnostico: diagnostico,
-        medicamentos: medicamentos,
-        exames: exames
-      },
-      dataType: 'json'
-    });
-    request.done(function(dados){
-      if (dados.atendimento._id) {
-        $('#atendimentoId').val(dados.atendimento._id);
+      if ($('#nome').val() == '') {
+        $('#nome').attr('data-erro', true);
+        setTimeout(function(){ $('#nome').removeAttr('data-erro'); }, 4000);
+        invalido = true;
       };
 
-      trataAlerta(dados);
-    });
+      if ($('#email').val() == '') {
+        $('#email').attr('data-erro', true);
+        setTimeout(function(){ $('#email').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
 
-  });
+      if ($('#telefone').val() == '') {
+        $('#telefone').attr('data-erro', true);
+        setTimeout(function(){ $('#telefone').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
 
-  function validaCampos() {
-    var invalido = false;
+      if ($('#queixa').val() == '') {
+        $('#queixa').attr('data-erro', true);
+        setTimeout(function(){ $('#queixa').removeAttr('data-erro'); }, 4000);
+        invalido = true;
+      };
 
-    if ($('#nome').val() == '') {
-      $('#nome').attr('data-erro', true);
-      setTimeout(function(){ $('#nome').removeAttr('data-erro'); }, 4000);
-      invalido = true;
-    };
-
-    if ($('#email').val() == '') {
-      $('#email').attr('data-erro', true);
-      setTimeout(function(){ $('#email').removeAttr('data-erro'); }, 4000);
-      invalido = true;
-    };
-
-    if ($('#telefone').val() == '') {
-      $('#telefone').attr('data-erro', true);
-      setTimeout(function(){ $('#telefone').removeAttr('data-erro'); }, 4000);
-      invalido = true;
-    };
-
-    if ($('#queixa').val() == '') {
-      $('#queixa').attr('data-erro', true);
-      setTimeout(function(){ $('#queixa').removeAttr('data-erro'); }, 4000);
-      invalido = true;
-    };
-
-    if (invalido) {      
-      dados = {
-        mensagem: {
-          tipo: 4,
-          erro: 'Atenção!',
-          texto: 'Informe todos os campos obrigatórios.'
+      if (invalido) {      
+        dados = {
+          mensagem: {
+            tipo: 4,
+            erro: 'Atenção!',
+            texto: 'Informe todos os campos obrigatórios.'
+          }
         }
-      }
-      
-      trataAlerta(dados);
-    };
+        
+        trataAlerta(dados);
+      };
 
-    return !invalido;
-  }
-
-  function trataAlerta(dados) {
-    var tipoAlerta = '';
-
-    if (dados.mensagem.tipo == 2) {
-      tipoAlerta = 'alert-success';
-    } else {
-      tipoAlerta = 'alert-danger';
+      return !invalido;
     }
 
-    $('.caixaAlerta').empty();
-    
-    $('.caixaAlerta').append('<div class="alert '+tipoAlerta+' alert-dismissible" role="alert">');
-    $('.caixaAlerta .alert').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
-    $('.caixaAlerta .alert').append('<strong>'+dados.mensagem.erro+'</strong> '+dados.mensagem.texto);      
+    function trataAlerta(dados) {
+      var tipoAlerta = '';
 
-    $('.caixaAlerta .alert').delay( 4000 ).slideUp( 400 );
-  };
+      if (dados.mensagem.tipo == 2) {
+        tipoAlerta = 'alert-success';
+      } else {
+        tipoAlerta = 'alert-danger';
+      }
 
-})
+      $('.caixaAlerta').empty();
+      
+      $('.caixaAlerta').append('<div class="alert '+tipoAlerta+' alert-dismissible" role="alert">');
+      $('.caixaAlerta .alert').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+      $('.caixaAlerta .alert').append('<strong>'+dados.mensagem.erro+'</strong> '+dados.mensagem.texto);      
+
+      $('.caixaAlerta .alert').delay( 4000 ).slideUp( 400 );
+    };
+
+  })
 </script>
