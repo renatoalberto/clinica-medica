@@ -88,6 +88,8 @@
         <dd class="apresentacao"></dd>
         <dt>Classe Terapêutica:</dt>
         <dd class="classeTerapeutica"></dd>
+        <dt class="detMedGenerico">Genéricos:</dt>
+        <dd class="detlistaGenericos"></dd>
       </dl>
     </div>
 
@@ -118,7 +120,7 @@
         dataType: 'json'
       });
       request.done(function(dados){
-        carregaMedicamentos(dados.medicamentos);
+        carregaMedicamentos(dados);
       });
     });
 
@@ -146,7 +148,7 @@
         dataType: 'json'
       });
       request.done(function(dados){
-        carregaMedicamentos(dados.medicamentos);
+        carregaMedicamentos(dados);
       });
     })
 
@@ -174,7 +176,7 @@
         dataType: 'json'
       });
       request.done(function(dados){
-        carregaMedicamentos(dados.medicamentos);
+        carregaMedicamentos(dados);
       });
     })
 
@@ -196,7 +198,7 @@
         dataType: 'json'
       });
       request.done(function(dados){
-        carregaMedicamentos(dados.medicamentos);
+        carregaMedicamentos(dados);
       });
     })
     
@@ -218,16 +220,16 @@
         dataType: 'json'
       });
       request.done(function(dados){
-        carregaMedicamentos(dados.medicamentos);
+        carregaMedicamentos(dados);
       });
     })
 
-    function carregaMedicamentos(medicamentos) {
+    function carregaMedicamentos(dados) {
       var qtRegistros = 0;
 
       $('#tabelaMedicamentos').html('');
       
-      medicamentos.forEach(function(m, index){
+      dados.medicamentos.forEach(function(m, index){
 
         if (index < qtPorPagina) {
           $('#linha-medicamento-modal .medicamento-nome').html(m.nome);
@@ -238,6 +240,14 @@
           $('#linha-medicamento-modal .btn').attr('data-princ-ativo',m.pricipioAtivo);
           $('#linha-medicamento-modal .btn').attr('data-apresentacao',m.apresentacao);
           $('#linha-medicamento-modal .btn').attr('data-classe-terapeutica',m.classeTerapeutica);
+
+          var genericos = '';
+          
+          m.genericos.forEach(function(g){
+            genericos += 'Nome: ' + g.nome + ', Laboratório: ' + g.laboratorio + '; ';
+          });
+
+          $('#linha-medicamento-modal .btn').attr('data-genericos',genericos);          
   
           var linha = $('#linha-medicamento-modal').html();
           $('#tabelaMedicamentos').append(linha);
@@ -248,10 +258,10 @@
 
       ++qtRegistros;
 
-      if (qtRegistros <= qtPorPagina) {
-        $('#pagMedProx').addClass('disabled');
-      } else {
+      if (dados.temMais) {
         $('#pagMedProx').removeClass('disabled');
+      } else {
+        $('#pagMedProx').addClass('disabled');
       };
 
       if (paginaAtual > 1) {
@@ -269,6 +279,7 @@
         var pricAtivo         = $(this).attr('data-princ-ativo');
         var apresentacao      = $(this).attr('data-apresentacao');
         var classeTerapeutica = $(this).attr('data-classe-terapeutica');
+        var genericos         = $(this).attr('data-genericos');
 
         $('#linha-medicamento .medicamento-nome').text(nome);
         $('#linha-medicamento .medicamento-apresentacao').text(apresentacao);
@@ -279,6 +290,7 @@
         $('#linha-medicamento .medicamento-info').attr('data-princ-ativo',pricAtivo);
         $('#linha-medicamento .medicamento-info').attr('data-apresentacao',apresentacao);
         $('#linha-medicamento .medicamento-info').attr('data-classe-terapeutica',classeTerapeutica);
+        $('#linha-medicamento .medicamento-info').attr('data-genericos',genericos);
         
         var linha = $('#linha-medicamento').html();
         $('#corpoTabMedicamentos').prepend(linha);
@@ -291,7 +303,23 @@
         $('#detMedicamento .laboratorio').text(laboratorio);
         $('#detMedicamento .pricAtivo').text(pricAtivo);
         $('#detMedicamento .apresentacao').text(apresentacao);
-        $('#detMedicamento .classeTerapeutica').text(classeTerapeutica);
+        $('#detMedicamento .classeTerapeutica').text(classeTerapeutica);  
+        $('#detMedicamento .detlistaGenericos').empty();
+
+        if (genericos == '') {
+          $('#detMedicamento .detMedGenerico').attr('hidden', true);
+          $('#detMedicamento .detlistaGenericos').attr('hidden', true);          
+        } else {
+          $('#detMedicamento .detMedGenerico').removeAttr('hidden');
+          $('#detMedicamento .detlistaGenericos').removeAttr('hidden');   
+
+          var arrayGenericos = genericos.split('; ');
+
+          arrayGenericos.forEach(function(g){
+            var elemento = $('<span>').addClass('lstMedicamento').text(g);
+            $('#detMedicamento .detlistaGenericos').append(elemento);
+          });
+        }
 
         var detalhes = $('#detMedicamento').html();
 

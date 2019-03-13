@@ -4,10 +4,10 @@
 
   <div class="container">
 
-    <fieldset >
+    <fieldset class="fieldset-externo">
       <legend>Atendimento</legend>
 
-      <fieldset >
+      <fieldset class="fieldset-interno">
         <legend>      
           Paciente
           <button class="btn btn-primary desgruda" id="psqPaciente" data-toggle="modal" data-target="#modalPesquisaPaciente"><span class="glyphicon glyphicon-search"></span></button>
@@ -34,7 +34,7 @@
         </div>
       </fieldset>
 
-      <fieldset>
+      <fieldset class="fieldset-interno">
         <legend>
           Prontuário
           <div class="btn-group" role="group" aria-label="...">
@@ -64,7 +64,7 @@
         </div>
 
         <div class="form-group col-md-6">
-          <fieldset class="caixa-protuario">
+          <fieldset class="fieldset-interno caixa-protuario">
             <legend>
               <div class="row">
                 <div class="col-xs-4">Medicamentos</div>
@@ -77,7 +77,7 @@
               </div>
             </legend>
             <table id="tabMedicamentos" class="table">
-              <thead>
+              <thead class="altura-cabecalho">
                 <tr class="row">
                   <th class="col-xs-5">Nome</th>
                   <th class="col-xs-7" colspan="2">Apresentação</th>
@@ -89,7 +89,7 @@
         </div>
 
         <div class="form-group col-md-6">
-          <fieldset class="caixa-protuario">
+          <fieldset class="fieldset-interno caixa-protuario">
             <legend>
               <div class="row">
                 <div class="col-xs-4">Exames</div>
@@ -102,7 +102,7 @@
               </div>
             </legend>
             <table id="tabExames" class="table table-hover">
-              <thead>
+              <thead class="altura-cabecalho">
                 <tr class="row">
                   <th class="col-xs-5">Exame</th>
                   <th class="col-xs-3">Exame Recebido</th>
@@ -310,7 +310,13 @@
           $('#medicamento').val('');
 
           //lista de medicamentos
-          dados.atendimento.medicamentos.forEach(function(m){
+          dados.atendimento.medicamentos.forEach(function(m){            
+            var genericos = '';
+                
+            m.genericos.forEach(function(g){
+              genericos   += 'Nome: '+g.nome+', Laboratório: '+g.laboratorio+'; ';
+            });  
+
             $('#linha-medicamento .medicamento-nome').text(m.nome);
             $('#linha-medicamento .medicamento-apresentacao').text(m.apresentacao);
     
@@ -320,6 +326,7 @@
             $('#linha-medicamento .medicamento-info').attr('data-princ-ativo',m.pricipioAtivo);
             $('#linha-medicamento .medicamento-info').attr('data-apresentacao',m.apresentacao);
             $('#linha-medicamento .medicamento-info').attr('data-classe-terapeutica',m.classeTerapeutica);
+            $('#linha-medicamento .medicamento-info').attr('data-genericos',genericos);
             
             var linha = $('#linha-medicamento').html();
             $('#corpoTabMedicamentos').prepend(linha);
@@ -329,6 +336,21 @@
             $('#detMedicamento .pricAtivo').text(m.pricipioAtivo);
             $('#detMedicamento .apresentacao').text(m.apresentacao);
             $('#detMedicamento .classeTerapeutica').text(m.classeTerapeutica);
+            $('#detMedicamento .detlistaGenericos').empty();
+
+            if (m.genericos.length == 0) {
+              $('#detMedicamento .detMedGenerico').attr('hidden', true);
+              $('#detMedicamento .detlistaGenericos').attr('hidden', true);          
+            } else {
+              $('#detMedicamento .detMedGenerico').removeAttr('hidden');
+              $('#detMedicamento .detlistaGenericos').removeAttr('hidden');   
+    
+              m.genericos.forEach(function(g){
+                var generico = 'Nome: '+g.nome+', Laboratório: '+g.laboratorio;
+                var elemento = $('<span>').addClass('lstMedicamento').text(generico);
+                $('#detMedicamento .detlistaGenericos').append(elemento);
+              });
+            }          
             
             var detalhes = $('#detMedicamento').html();
             
@@ -455,7 +477,22 @@
       var medicamentos     = [];
       var exames           = [];
 
-      $('#corpoTabMedicamentos .medicamento-info').each(function(index){
+      $('#corpoTabMedicamentos .medicamento-info').each(function(index){        
+        var genericos = $(this).attr('data-genericos').split('; ');
+        var listaNomeGenerico = [];
+        var listaLaboratorioGenerico = [];
+
+        genericos.forEach(function(g){
+          if (g != '') {            
+            var nomeLaboratorio = g.split(', ');            
+            var nome            = nomeLaboratorio[0].replace("Nome: ","");
+            var laboratorio     = nomeLaboratorio[1].replace("Laboratório: ","");
+  
+            listaNomeGenerico.push(nome);
+            listaLaboratorioGenerico.push(laboratorio);
+          }
+        });
+
         medicamentos[index] = {
           id:                $(this).attr('data-id'),
           nome:              $(this).attr('data-nome'),
@@ -463,7 +500,8 @@
           pricipioAtivo:     $(this).attr('data-princ-ativo'),
           apresentacao:      $(this).attr('data-apresentacao'),
           classeTerapeutica: $(this).attr('data-classe-terapeutica'),
-          genericos: []
+          listaNomeGenerico: listaNomeGenerico,
+          listaLaboratorioGenerico: listaLaboratorioGenerico
         }
       });
 

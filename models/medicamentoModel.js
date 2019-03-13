@@ -9,7 +9,8 @@ var medicamentoSchema = new Schema (
     apresentacao: String,
     classeTerapeutica: String,
     genericos: [{
-      nome: String
+      nome: String,
+      laboratorio: String
     }]
   }
 );

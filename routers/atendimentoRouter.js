@@ -72,6 +72,27 @@ atendimentoRouter.post('/api/gravaatendimento', urlEncodedParser, function(req, 
   var medicamentos = [];
 
   for (var i=0; req.body['medicamentos['+i+'][id]']; i++) {
+    var genericos = [];
+
+    if(req.body['medicamentos['+i+'][listaNomeGenerico][]']) {
+      if(Array.isArray(req.body['medicamentos['+i+'][listaNomeGenerico][]'])) {
+
+        req.body['medicamentos['+i+'][listaNomeGenerico][]'].forEach(function(nome, index){
+          var laboratorio = req.body['medicamentos['+i+'][listaLaboratorioGenerico][]'][index];
+          var generico = {nome: nome, laboratorio: laboratorio};
+          genericos.push(generico);
+        });
+        
+      } else {
+
+        var nome        = req.body['medicamentos['+i+'][listaNomeGenerico][]'];
+        var laboratorio = req.body['medicamentos['+i+'][listaLaboratorioGenerico][]'];
+        var generico = {nome: nome, laboratorio: laboratorio};
+        genericos.push(generico);
+
+      }
+    }
+
     medicamento = {
       medicamentoId:     req.body['medicamentos['+i+'][id]'],
       nome:              req.body['medicamentos['+i+'][nome]'],
@@ -79,7 +100,7 @@ atendimentoRouter.post('/api/gravaatendimento', urlEncodedParser, function(req, 
       pricipioAtivo:     req.body['medicamentos['+i+'][pricipioAtivo]'],
       apresentacao:      req.body['medicamentos['+i+'][apresentacao]'],
       classeTerapeutica: req.body['medicamentos['+i+'][classeTerapeutica]'],
-      genericos: []
+      genericos: genericos
     };
 
     medicamentos.push(medicamento);
@@ -124,10 +145,31 @@ atendimentoRouter.post('/api/gravaatendimento', urlEncodedParser, function(req, 
 });
 
 atendimentoRouter.post('/api/gravaatendimento/:id', urlEncodedParser, function(req, res){
-
   var medicamentos = [];
 
   for (var i=0; req.body['medicamentos['+i+'][id]']; i++) {
+    var genericos = [];
+
+    if(req.body['medicamentos['+i+'][listaNomeGenerico][]']) {
+      if(Array.isArray(req.body['medicamentos['+i+'][listaNomeGenerico][]'])) {
+
+        req.body['medicamentos['+i+'][listaNomeGenerico][]'].forEach(function(nome, index){
+          var laboratorio = req.body['medicamentos['+i+'][listaLaboratorioGenerico][]'][index];
+          var generico = {nome: nome, laboratorio: laboratorio};
+          genericos.push(generico);
+        });
+        
+      } else {
+
+        var nome        = req.body['medicamentos['+i+'][listaNomeGenerico][]'];
+        var laboratorio = req.body['medicamentos['+i+'][listaLaboratorioGenerico][]'];
+        var generico = {nome: nome, laboratorio: laboratorio};
+        genericos.push(generico);
+
+      }
+    }
+
+
     medicamento = {
       medicamentoId:     req.body['medicamentos['+i+'][id]'],
       nome:              req.body['medicamentos['+i+'][nome]'],
@@ -135,7 +177,7 @@ atendimentoRouter.post('/api/gravaatendimento/:id', urlEncodedParser, function(r
       pricipioAtivo:     req.body['medicamentos['+i+'][pricipioAtivo]'],
       apresentacao:      req.body['medicamentos['+i+'][apresentacao]'],
       classeTerapeutica: req.body['medicamentos['+i+'][classeTerapeutica]'],
-      genericos: []
+      genericos: genericos
     };
 
     medicamentos.push(medicamento);

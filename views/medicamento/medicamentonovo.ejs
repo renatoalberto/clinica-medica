@@ -1,0 +1,110 @@
+<%- include('../cabecalho') %>
+<%- include('../menu') %>
+<%- include('../menuAdministração')%>
+
+<div class="container">
+
+  <h1>Novo Medicamento</h1>
+
+  <form method="post" onsubmit="return document.validateForm()" novalidate class="form-horizontal" action="/medicamentos/novo">
+    <%- include('medicamentoform') %>       
+
+    <div class="form-group">
+      <div class="col-sm-10 col-sm-offset-2">
+        <input type="submit" class="btn btn-primary" value="Incluir">
+        <input type="reset"  class="btn btn-success" value="Limpar">
+        <a class="btn btn-default" href="/medicamentos">Cancelar</a>
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<%- include('../rodape') %>
+
+<script>
+
+$(document).ready(function(e){
+
+  document.validateForm = function() {
+    console.log('chamou button type=submit');
+    var invalido = false;
+  
+    if ($('#nome').val() == '') {
+      $('#nome').attr('data-erro', true);
+      setTimeout(function(){ $('#nome').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+  
+    if ($('#laboratorio').val() == '') {
+      $('#laboratorio').attr('data-erro', true);
+      setTimeout(function(){ $('#laboratorio').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+  
+    if ($('#pricipioAtivo').val() == '') {
+      $('#pricipioAtivo').attr('data-erro', true);
+      setTimeout(function(){ $('#pricipioAtivo').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };
+  
+    if ($('#apresentacao').val() == '') {
+      $('#apresentacao').attr('data-erro', true);
+      setTimeout(function(){ $('#apresentacao').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };   
+        
+    if ($('#classeTerapeutica').val() == '') {
+      $('#classeTerapeutica').attr('data-erro', true);
+      setTimeout(function(){ $('#classeTerapeutica').removeAttr('data-erro'); }, 4000);
+      invalido = true;
+    };      
+  
+    if (invalido) {        
+      $('#caixaAlerta').empty();
+  
+      $('#caixaAlerta').append('<div class="alert alert-danger alert-dismissible" role="alert">');
+      $('#caixaAlerta .alert').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+      $('#caixaAlerta .alert').append('<strong>Atenção! </strong>Informe todos os campos obrigatórios.');      
+  
+      $('#caixaAlerta .alert').delay( 4000 ).slideUp( 400 );
+  
+      return false;
+    };
+  };
+
+  $('#novoGenerico').click(function(e){
+    e.preventDefault();
+
+    if($('#nomeGenerico').val() == '') {
+      $('#nomeGenerico').attr('data-erro', true);
+      setTimeout(function(){ $('#nomeGenerico').removeAttr('data-erro'); }, 4000);
+      return false;
+    };
+
+    $('#linhaTabGenericos tr td:nth-child(1)').html($('#nomeGenerico').val()        + '<input hidden name="listaNomeGenerico[]"        value="'+$('#nomeGenerico').val()+'">');
+    $('#linhaTabGenericos tr td:nth-child(2)').html($('#laboratorioGenerico').val() + '<input hidden name="listaLaboratorioGenerico[]" value="'+$('#laboratorioGenerico').val()+'">');
+
+    $('#nomeGenerico').val('');
+    $('#laboratorioGenerico').val('');
+
+    var linha = $("#linhaTabGenericos").html();
+    $('#corpoTabGenericos').prepend(linha);
+
+    $('#linhaTabGenericos tr td:nth-child(1)').empty();
+    $('#linhaTabGenericos tr td:nth-child(2)').empty();
+
+    $('.exclui-generico').eq(0).click(function(e){
+      e.preventDefault();
+      $('#corpoTabGenericos tr').has(this).remove();
+    });
+  });
+
+  $('.exclui-generico').click(function(e){
+    e.preventDefault();
+    $('#corpoTabGenericos tr').has(this).remove();
+  });
+
+
+});
+</script>

@@ -91,6 +91,10 @@ th > .col-sm-2 {
   margin-left: 2px;
 }
 
+#colBotoes {
+  min-width: 110px;
+}
+
 .desgruda {
   position: relative;
   bottom: 5px;
@@ -100,16 +104,19 @@ th > .col-sm-2 {
   text-decoration: none !important;
 }
 
-fieldset{
+fieldset {
+  box-shadow: 1px 1px 7px gray, -1px -1px 1px lightgray;
+}
+
+.fieldset-externo{
   margin-top: 20px;
   padding: 20px;
-  box-shadow: 1px 1px 7px gray, -1px -1px 1px lightgray;
   background-color: #66b9bf;
 }
 
-fieldset fieldset{
+.fieldset-interno{
   margin-bottom: 40px;
-  padding: 5px;;
+  padding: 5px;
   background-color: whitesmoke;
 }
 
@@ -121,12 +128,16 @@ fieldset fieldset legend{
   margin-bottom: 0;
 }
 
-fieldset fieldset .table {
+.fieldset-interno .table {
   background-color: whitesmoke;
 }
 
-fieldset thead {
+.altura-cabecalho {
   height: 60px;
+}
+
+.margem-inferior {
+  margin-bottom: 5px;
 }
 
 #atual {
@@ -160,4 +171,10 @@ fieldset thead {
   border-color: #d9534f;
   box-shadow: inset 0px 1px 1px rgba(0,0,0,0.075), 0px 0px 8px #d9534f;
   z-index: 3;
+}
+
+.lstMedicamento {
+  background-color: lightcyan;
+  display: block;
+  margin-bottom: 5px;
 }

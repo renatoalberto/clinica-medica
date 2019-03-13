@@ -1,0 +1,92 @@
+<div class="form-group">
+  <label for="nome" class="col-sm-2 control-label">Nome</label>
+  <div class="col-sm-10">
+    <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome" value="<%= medicamento.nome %>" tabindex="1" required>
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="laboratorio" class="col-sm-2 control-label">Laboratório</label>
+  <div class="col-sm-10">
+    <input type="text" class="form-control" id="laboratorio" name="laboratorio" placeholder="Laboratório" value="<%= medicamento.laboratorio %>" tabindex="2" required>
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="pricipioAtivo" class="col-sm-2 control-label">Princípio Ativo</label>
+  <div class="col-sm-10">
+    <input type="text" class="form-control" id="pricipioAtivo" name="pricipioAtivo" placeholder="Pricípio Ativo" value="<%= medicamento.pricipioAtivo %>" tabindex="3" required>
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="apresentacao" class="col-sm-2 control-label">Apresentação</label>
+  <div class="col-sm-10">
+    <input type="text" class="form-control" id="apresentacao" name="apresentacao" placeholder="Apresentação" value="<%= medicamento.apresentacao %>" tabindex="4" required>
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="classeTerapeutica" class="col-sm-2 control-label">Classe Terapeutica</label>
+  <div class="col-sm-10">
+    <input type="text" class="form-control" id="classeTerapeutica" name="classeTerapeutica" placeholder="classeTerapeutica" value="<%= medicamento.classeTerapeutica %>" tabindex="5" required>
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="nomeGenerico" class="col-sm-2 control-label">Genérico</label>
+  
+  <div class="col-sm-10">
+    <fieldset class="fieldset-interno">
+      <div class="form-group"> 
+        <div class="col-sm-5">
+          <input type="text" class="form-control validacao margem-inferior" id="nomeGenerico" placeholder="Nome do medicamento genérico" tabindex="6">
+        </div>
+        <div class="col-sm-5">          
+          <input type="text" class="form-control margem-inferior" id="laboratorioGenerico" placeholder="Laboratório do medicamento genérico" tabindex="7">      
+        </div>
+        <div class="col-sm-2">          
+          <a class="btn btn-default" id="novoGenerico" tabindex="8"><span class="glyphicon glyphicon-saved"></span></a>
+        </div>  
+      </div>
+
+      <table id="tabGenericos" class="table table-hover">
+        <thead>
+          <tr class="row">
+            <th>Nome</th>
+            <th>Laboratório</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody id="corpoTabGenericos">
+          <% medicamento.genericos.forEach(function(generico){ %>
+            <tr class="row">
+              <td>
+                <%= generico.nome %>
+                <input hidden name="listaNomeGenerico[]" value="<%= generico.nome %>">
+              </td>
+              <td>
+                <%= generico.laboratorio %>
+                <input hidden name="listaLaboratorioGenerico[]" value="<%= generico.laboratorio %>">
+              </td>
+              <td class="col-xs-1"><button class="btn btn-danger btn-xs exclui-generico"><span class="glyphicon glyphicon-trash"></span></button></td>
+            </tr>
+          <% }) %>
+        </tbody>
+
+      </table>
+    </fieldset>
+  </div>
+
+  <table hidden>
+    <tbody id="linhaTabGenericos">
+      <tr class="row">
+        <td>Nome Genérico</td>
+        <td>Laboratório Genérico</td>
+        <td class="col-xs-1"><button class="btn btn-danger btn-xs exclui-generico"><span class="glyphicon glyphicon-trash"></span></button></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

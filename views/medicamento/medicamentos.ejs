@@ -1,0 +1,261 @@
+<%- include('../cabecalho') %>
+<%- include('../menu') %>
+<%- include('../menuAdministração')%>
+
+ <div class="container">
+
+   <h1>Medicamentos</h1>
+   <p><a class="btn btn-primary" href="/medicamentos/novo">Novo</a></p>
+
+   <table class="table table-striped">
+     <thead>
+        <tr>
+          <th>
+            <label class="col-sm-2" for="psq-nome">Nome</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-nome" class="form-control" />
+            </div>
+          </th>
+          <th>
+            <label class="control-label col-sm-2" for="psq-email">Apresentação</label>
+            <div class="col-sm-10">
+              <input type="text" id="psq-apresentacao" class="form-control" />
+            </div>
+          </th>
+          <th id="colBotoes"></th>
+        </tr>
+      </thead>
+
+      <tbody id="tabela"></tbody>
+
+    </table>
+   
+    <nav aria-label="Paginação da lista de medicamentos">
+      <ul class="pagination">
+        <li id="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+        <li class="active"><a href="#" id="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+        <li id="proxima"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+      </ul>
+    </nav>
+
+  </div>
+   
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title warning" id="myModalLabel">Confirma Exclusão do medicamento</h4>
+        </div>
+        <div class="modal-body">
+          A ação não poderá ser desfeita. Exclua somente se tiver certeza.
+        </div>
+        <div class="modal-footer">        
+          <input type="hidden" id="idExcluido" name="id">
+          <button type="button" data-dismiss="modal" class="btn btn-default" >Fechar</button>
+          <button type="button" data-dismiss="modal" class="btn btn-default btn-cinza" id="btnExcluir">Excluir definitivamente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('../rodape') %>
+
+<script>
+  var paginaAtual       = 1;
+  const qtPorPagina     = 10;
+  var temMais           = false;
+
+  $(document).ready(function(){
+    var nome              = '';
+    var apresentacao      = '';
+
+    var request = $.ajax({
+      url: 'medicamentos/api/paginacao',
+      method: 'POST',
+      data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+      },
+      dataType: 'json'
+    });
+    request.done(function(dados){
+      carregaMedicamentos(dados);
+    });
+    
+    $('#psq-nome').keyup(function(){      
+      var nome         = $('#psq-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      paginaAtual = 1;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados);
+      });
+    });
+
+    $('#psq-apresentacao').keyup(function(){
+      var nome         = $('#psq-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      paginaAtual = 1;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados);
+      });
+    });
+
+    $('#anterior').click(function(e){
+      e.preventDefault();
+
+      if (paginaAtual == 1) {
+        return false;
+      };
+
+      var nome         = $('#psq-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      --paginaAtual;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados);
+      });
+    });
+
+    $('#proxima').click(function(e){
+      e.preventDefault();
+
+      if (!temMais) {
+        return false;
+      };
+
+      var nome         = $('#psq-nome').val();
+      var apresentacao = $('#psq-apresentacao').val();  
+      
+      ++paginaAtual;      
+
+      var request = $.ajax({
+        url: 'medicamentos/api/paginacao',
+        method: 'POST',
+        data: {
+          nome: nome,
+          apresentacao: apresentacao,
+          paginaAtual: paginaAtual,
+          qtPorPagina: qtPorPagina
+        },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMedicamentos(dados);
+      });
+    });
+
+    $('#btnExcluir').click(function(){  
+      var request = $.ajax({
+        url: '/medicamentos/api/excluir',
+        method: 'DELETE',
+        data: { id: $('#idExcluido').val() },
+        dataType: 'json'
+      });
+      request.done(function(dados){
+        carregaMensagem(dados.mensagem);
+      });
+
+      --paginaAtual;   
+      temMais = true; 
+      $('#proxima').trigger('click');
+    });    
+
+    function carregaMedicamentos(dados) {
+      $('#tabela').empty('');
+      
+      dados.medicamentos.forEach(function(medicamento){
+        $('#tabela').append('<tr id="tr'+medicamento._id+'">');
+  
+        $('#tr'+medicamento._id).append('<td>'+medicamento.nome+'</td>');
+        $('#tr'+medicamento._id).append('<td>'+medicamento.apresentacao+'</td>');
+        $('#tr'+medicamento._id).append('<td id="td'+medicamento._id+'"></td>');
+  
+        $('#td'+medicamento._id).append('<div class="botoes-direita" id="div'+medicamento._id+'">');
+  
+        $('#div'+medicamento._id).append('<a href="/medicamentos/alterar/'+ medicamento._id +'" class="btn btn-info" id="a'+medicamento._id+'">');
+        $('#div'+medicamento._id).append('<button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="'+ medicamento._id +'" id="button'+medicamento._id+'">');
+  
+        $('#a'+medicamento._id).append('<span class="glyphicon glyphicon-pencil"></span>');
+  
+        $('#button'+medicamento._id).append('<span class="glyphicon glyphicon-trash"></span>');         
+      });
+
+      //Controle paginação
+      if ( dados.temMais ) {
+        $('#proxima').removeClass('disabled');
+      } else {
+        $('#proxima').addClass('disabled');
+      };
+
+      temMais = dados.temMais;
+      
+      if (paginaAtual == 1) {
+        $('#anterior').addClass('disabled');
+      } else {
+        $('#anterior').removeClass('disabled');
+      };
+
+      $('#atual').text(' Pág. '+paginaAtual+' ');
+
+      // Adiciona eventos
+      $('.trataClique').click(function(){
+        var id = $(this).attr("data-id");
+        $('#idExcluido').val(id);
+      }); 
+    };
+
+    function carregaMensagem(mensagem) {
+      $('#caixaAlerta').empty();
+
+      $('#caixaAlerta').append('<div class="alert alert-success alert-dismissible" role="alert">');
+      $('#caixaAlerta div').append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+      $('#caixaAlerta div').append('<strong>'+ mensagem.erro +'</strong> '+ mensagem.texto );
+      $('#caixaAlerta > .alert').delay( 4000 ).slideUp( 400 );
+    };
+
+  })
+
+
+</script>
