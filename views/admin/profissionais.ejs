@@ -5,48 +5,50 @@
  <div class="container">
 
    <h1>Profissionais</h1>
-   <p><a class="btn btn-primary" href="/admin/profissionais/novo">Novo</a></p>
+   <p><a class="btn btn-primary" href="/admin/profissionais/novo"><i class="fas fa-plus"></i> Novo</a></p>
 
-   <table class="table table-striped">
-     <thead>
-        <tr>
-         <th>Nome</th>
-         <th>Email</th>
-         <th>Telefone</th>
-         <th>Função</th>
-         <th>Admin</th>
-         <th id="colBotoes"></th>
-        </tr>
-     </thead>
-
-      <tbody id="tabela">
-        <% profissionais.forEach(function(profissional){ %>  
+   <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
           <tr>
-            <td><%= profissional.nome %></td>
-            <td><%= profissional.email %></td>
-            <td><%= profissional.telefone %></td>
-            <td><%= profissional.funcao %></td>
+          <th>Nome</th>
+          <th class="hidden-xs">Email</th>
+          <th>Telefone</th>
+          <th>Função</th>
+          <th>Admin</th>
+          <th id="colBotoes"></th>
+          </tr>
+      </thead>
 
-            <td>
-              <% if (profissional.admin) { %>
-                <span class="glyphicon glyphicon-ok"></span>
-              <% } %>
-            </td>
+        <tbody id="tabela">
+          <% profissionais.forEach(function(profissional){ %>  
+            <tr>
+              <td><%= profissional.nome %></td>
+              <td class="hidden-xs"><%= profissional.email %></td>
+              <td><%= profissional.telefone %></td>
+              <td><%= profissional.funcao %></td>
 
-            <td>
-              <div class="botoes-direita">
-                <a href="/admin/profissionais/alterar/<%= profissional._id %>" class="btn btn-info">
-                  <span class="glyphicon glyphicon-pencil"></span>
-                </a>               
-                <button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="<%= profissional._id %>">
-                  <span class="glyphicon glyphicon-trash"></span>
-                </button>   
-              </div>
-            </td>
-          </tr>  
-        <% }) %>
-      </tbody>
-   </table>
+              <td>
+                <% if (profissional.admin) { %>
+                  <span class="glyphicon glyphicon-ok"></span>
+                <% } %>
+              </td>
+
+              <td>
+                <div class="botoes-direita">
+                  <a href="/admin/profissionais/alterar/<%= profissional._id %>" class="btn btn-info">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                  </a>               
+                  <button type="button" class="btn btn-danger trataClique" data-toggle="modal" data-target="#myModal" data-id="<%= profissional._id %>">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </button>   
+                </div>
+              </td>
+            </tr>  
+          <% }) %>
+        </tbody>
+      </table>
+   </div>
 
    <br/>
 

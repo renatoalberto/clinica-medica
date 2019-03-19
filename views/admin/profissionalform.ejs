@@ -37,23 +37,13 @@
 </div>
 
 <div class="form-group">
-  <label for="admin" class="col-sm-2 control-label">Administrador</label>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="radio" name="admin" <%= (profissional.admin)?'checked':'' %> value="true">
-      </span>
-      <input type="text" class="form-control" value="Sim" readonly>
-    </div>
+  <label for="agenda" class="col-sm-2 control-label">Administrador</label>
+  <div class="col-sm-10">
+    <button class="btn btn-default btn-ctrl-tamanho btn-admin" data-ativo="<%= ( profissional.admin)?'true':'' %>">Sim</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-admin" data-ativo="<%= (!profissional.admin)?'true':'' %>">Não</button>
   </div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="radio" name="admin" <%= (!profissional.admin)?'checked':'' %> value="false">
-      </span>
-      <input type="text" class="form-control" value="Não" readonly>
-    </div>
-  </div>
+  <input type="radio" id="adminSim" name="admin" <%= ( profissional.admin)?'checked':'' %> value="true" hidden>
+  <input type="radio" id="adminNao" name="admin" <%= (!profissional.admin)?'checked':'' %> value="false" hidden>
 </div>
 
 <%
@@ -67,63 +57,24 @@
 
 <div class="form-group">
   <label for="agenda" class="col-sm-2 control-label">Agenda</label>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[0])?'checked':'' %> value=0>
-      </span>
-      <input type="text" class="form-control" value="Domingo" readonly>
-    </div>
+  <div class="col-sm-10">
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[0])?'true':'' %>" data-dia="0">Domingo</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[1])?'true':'' %>" data-dia="1">Segunda</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[2])?'true':'' %>" data-dia="2">Terça</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[3])?'true':'' %>" data-dia="3">Quarta</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[4])?'true':'' %>" data-dia="4">Quinta</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[5])?'true':'' %>" data-dia="5">Sexta</button>
+    <button class="btn btn-default btn-ctrl-tamanho btn-agenda" data-ativo="<%= (agenda[6])?'true':'' %>" data-dia="6">Sábado</button>
   </div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[1])?'checked':'' %> value=1>
-      </span>
-      <input type="text" class="form-control" value="Segunda" readonly>
-    </div>
-  </div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[2])?'checked':'' %> value=2>
-      </span>
-      <input type="text" class="form-control" value="Terça" readonly>
-    </div>
-  </div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[3])?'checked':'' %> value=3>
-      </span>
-      <input type="text" class="form-control" value="Quarta" readonly>
-    </div>
-  </div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[4])?'checked':'' %> value=4>
-      </span>
-      <input type="text" class="form-control" value="Quinta" readonly>
-    </div>
-  </div>
+  <input type="checkbox" id="agenda0" name="agenda" <%= (agenda[0])?'checked':'' %> value=0 hidden>
+  <input type="checkbox" id="agenda1" name="agenda" <%= (agenda[1])?'checked':'' %> value=1 hidden>
+  <input type="checkbox" id="agenda2" name="agenda" <%= (agenda[2])?'checked':'' %> value=2 hidden>
+  <input type="checkbox" id="agenda3" name="agenda" <%= (agenda[3])?'checked':'' %> value=3 hidden>
+  <input type="checkbox" id="agenda4" name="agenda" <%= (agenda[4])?'checked':'' %> value=4 hidden>
+  <input type="checkbox" id="agenda5" name="agenda" <%= (agenda[5])?'checked':'' %> value=5 hidden>
+  <input type="checkbox" id="agenda6" name="agenda" <%= (agenda[6])?'checked':'' %> value=6 hidden>
 </div>
-<div class="form-group">
-  <div class="col-sm-2 control-label"></div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[5])?'checked':'' %> value=5>
-      </span>
-      <input type="text" class="form-control" value="Sexta" readonly>
-    </div>
-  </div>
-  <div class="col-lg-2">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" name="agenda" <%= (agenda[6])?'checked':'' %> value=6>
-      </span>
-      <input type="text" class="form-control" value="Sábado" readonly>
-    </div>
-  </div>
-</div> 
+
+
+
+

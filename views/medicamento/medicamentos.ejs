@@ -5,30 +5,32 @@
  <div class="container">
 
    <h1>Medicamentos</h1>
-   <p><a class="btn btn-primary" href="/medicamentos/novo">Novo</a></p>
+   <p><a class="btn btn-primary" href="/medicamentos/novo"><i class="fas fa-plus"></i> Novo</a></p>
 
-   <table class="table table-striped">
-     <thead>
-        <tr>
-          <th>
-            <label class="col-sm-2" for="psq-nome">Nome</label>
-            <div class="col-sm-10">
-              <input type="text" id="psq-nome" class="form-control" />
-            </div>
-          </th>
-          <th>
-            <label class="control-label col-sm-2" for="psq-email">Apresentação</label>
-            <div class="col-sm-10">
-              <input type="text" id="psq-apresentacao" class="form-control" />
-            </div>
-          </th>
-          <th id="colBotoes"></th>
-        </tr>
-      </thead>
+   <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>
+              <label class="col-sm-2" for="psq-nome">Nome</label>
+              <div class="col-sm-10">
+                <input type="text" id="psq-nome" class="form-control" />
+              </div>
+            </th>
+            <th>
+              <label class="control-label col-sm-2" for="psq-email">Apresentação</label>
+              <div class="col-sm-10">
+                <input type="text" id="psq-apresentacao" class="form-control" />
+              </div>
+            </th>
+            <th id="colBotoes"></th>
+          </tr>
+        </thead>
 
-      <tbody id="tabela"></tbody>
+        <tbody id="tabela"></tbody>
 
-    </table>
+      </table>
+    </div>
    
     <nav aria-label="Paginação da lista de medicamentos">
       <ul class="pagination">

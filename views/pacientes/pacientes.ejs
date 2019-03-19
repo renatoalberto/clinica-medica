@@ -4,10 +4,11 @@
 
  <div class="container">
 
-   <h1>Pacientes</h1>
-   <p><a class="btn btn-primary" href="/pacientes/novo">Novo</a></p>
+  <h1>Pacientes</h1>
+  <p><a class="btn btn-primary" href="/pacientes/novo"><i class="fas fa-plus"></i> Novo</a></p>
 
-   <table class="table table-striped">
+  <div class="table-responsive">
+    <table class="table table-striped">
      <thead>
         <tr>
           <th>
@@ -16,7 +17,7 @@
               <input type="text" id="psq-nome" class="form-control" />
             </div>
           </th>
-          <th>
+          <th  class="hidden-xs">
             <label class="control-label col-sm-2" for="psq-email">Email</label>
             <div class="col-sm-10">
               <input type="text" id="psq-email" class="form-control" />
@@ -35,14 +36,15 @@
       <tbody id="tabela"></tbody>
 
     </table>
+  </div>
    
-    <nav aria-label="Paginação da lista de pacientes">
-      <ul class="pagination">
-        <li id="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
-        <li class="active"><a href="#" id="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
-        <li id="proxima"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
-      </ul>
-    </nav>
+  <nav aria-label="Paginação da lista de pacientes">
+    <ul class="pagination">
+      <li id="anterior"><a href="#" aria-label="Página anterior"><span aria-hidden="true">&laquo;</span></a></li>
+      <li class="active"><a href="#" id="atual"> Pág. 1 <span class="sr-only">(current)</span></a></li>
+      <li id="proxima"><a href="#" aria-label="Próxima página"><span aria-hidden="true">&raquo;</span></a></li>
+    </ul>
+  </nav>
 
   </div>
    
@@ -173,7 +175,7 @@
         $('#tabela').append('<tr id="tr'+paciente._id+'">');
   
         $('#tr'+paciente._id).append('<td>'+paciente.nome+'</td>');
-        $('#tr'+paciente._id).append('<td>'+paciente.email+'</td>');
+        $('#tr'+paciente._id).append('<td  class="hidden-xs">'+paciente.email+'</td>');
         $('#tr'+paciente._id).append('<td>'+paciente.telefone+'</td>');
         $('#tr'+paciente._id).append('<td id="td'+paciente._id+'">');
   

@@ -24,6 +24,36 @@
 
 <script>
   $(document).ready(function(e){
+  // (Botão de agenda) ---------------------------------------------------------------    
+    $('.btn-agenda').click(function(e){
+      e.preventDefault();
+
+      var dia = $(this).attr('data-dia');
+
+      if( $(this).attr('data-ativo') ) {
+        $(this).removeAttr('data-ativo');
+        $('#agenda'+dia).removeAttr('checked');
+      } else {
+        $(this).attr('data-ativo', true);
+        $('#agenda'+dia).attr('checked', true);
+      };
+    });
+
+  // (Botão de administrador) ---------------------------------------------------------------    
+    $('.btn-admin').click(function(e){
+      e.preventDefault();
+
+      if( $(this).text() == 'Sim' ) {
+        $(this).attr('data-ativo', true);
+        $('.btn-admin').eq(1).removeAttr('data-ativo');
+        $('#adminSim').trigger('click');
+      } else {
+        $(this).attr('data-ativo', true);
+        $('.btn-admin').eq(0).removeAttr('data-ativo');
+        $('#adminNao').trigger('click');
+      };
+    });    
+    
   // (Botão Novo Atendimento) --------------------------------------------------------
     $('button[type="submit"]').click(function(e){
       var invalido = false;

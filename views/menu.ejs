@@ -1,27 +1,41 @@
-<nav class="navbar">
+<nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <span class="navbar-brand"><a href="/">Sistema de Gestão - Clínica Médica</a></span>
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/"><i class="fas fa-clinic-medical"></i> Clínica Médica</a>
     </div>
-    <ul class="nav navbar-nav">
-      <% if(usuario.nome != '') { %>
-        <li><a href="/pacientes">Pacientes</a></li>
-        <li><a href="/consultas">Marcação de Consultas</a></li>
 
-        <% if(usuario.funcao == "Médico" || usuario.admin == 'true') { %>
-          <li><a href="/atendimento">Atendimento</a></li>
-          <li><a href="/medicamentos">Medicamentos</a></li>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <% if(usuario.nome != '') { %>
+          <li><a href="/pacientes"><i class="far fa-address-book"></i> Pacientes</a></li>
+          <li><a href="/consultas"><i class="far fa-address-card"></i> Marcação de Consultas</a></li>
+
+          <% if(usuario.funcao == "Médico" || usuario.admin == 'true') { %>
+            <li><a href="/medicamentos"><i class="fas fa-capsules"></i> Medicamentos</a></li>
+            <li><a href="/atendimento"><i class="fas fa-user-md"></i> Atendimento</a></li>
+          <% } %>
+
         <% } %>
-
-      <% } %>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li class="navbar-text"> <%= usuario.nome %></li>
-      <% if(usuario.nome == '') { %>
-      <li><a href="/login">Login</a></li>
-      <% } else { %>
-      <li><a href="/logout">Logout</a></li>
-      <% } %>
-    </ul>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <% if(usuario.nome == '') { %>
+        <li>          
+        <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+        </li>
+        <% } else { %>
+        <li class="navbar-text"> <i class="fas fa-male"></i> <%= usuario.nome %></li>
+        <li>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
+        <% } %>
+      </ul>
+    </div>
   </div>
 </nav>

@@ -5,11 +5,12 @@
 
 body {
   background-color: #fafafa;
+  padding-top: 70px; 
 }
 
 .desenho-doutora{
   position: absolute;
-  top: -30px;
+  top: -20px;
 }
 
 .container {
@@ -55,19 +56,27 @@ body {
   margin-top: 5px;
 }
 
+.largura-total{
+  width: 100%;
+}
+
 h1{
   margin-bottom: 1em;
 }
 
 .rodape {
+  display: block;
+  width: 190px;  
   margin: 2em auto 2em;
+  clear: both;
 }
 
 .rodapePrincipal {
+  display: block;
+  width: 190px;  
+  margin: 2em auto 2em;
   position: relative;
   bottom: -200px;
-  width: 300px;
-  margin: 2em auto 2em;
 }
 
 .navbar{
@@ -177,4 +186,17 @@ fieldset fieldset legend{
   background-color: lightcyan;
   display: block;
   margin-bottom: 5px;
+}
+
+.btn-ctrl-tamanho{
+  width: 13.9%;  
+  min-width: 130px;
+}
+
+.btn-default[data-ativo=true]{
+  background-image: linear-gradient(#66b9bf, #99ced4, lightcyan);
+}
+
+.badge {
+  width: 50px;
 }
