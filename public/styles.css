@@ -13,7 +13,7 @@ body {
   top: -20px;
 }
 
-.container {
+.container {  
   background-color: gainsboro;
 }
 
@@ -199,4 +199,11 @@ fieldset fieldset legend{
 
 .badge {
   width: 50px;
+}
+
+.container-textarea{
+  padding: 0 15px;  
+  position: relative;
+  top: -15px;
+  margin: 15px 0;
 }
