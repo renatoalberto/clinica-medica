@@ -1,11 +1,9 @@
-/* 
-  Algumas cores já utilizadas
-  verde-pastel - add9bd
-*/
-
 body {
   background-color: #fafafa;
-  padding-top: 70px; 
+}
+
+.margem-menu{
+  height: 50px;
 }
 
 .desenho-doutora{

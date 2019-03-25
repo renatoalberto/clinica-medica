@@ -5,23 +5,26 @@
   <div class="container">
 
     <fieldset class="fieldset-externo">
-      <legend>Atendimento</legend>
+      <legend>
+        Atendimento
+        <button class="btn btn-default desgruda hidden-print botoes-direita" onclick="window.print()"><i class="fas fa-print"></i></button>
+      </legend>
 
       <fieldset class="fieldset-interno">
         <legend>      
           Paciente
-          <button class="btn btn-primary desgruda" id="psqPaciente" data-toggle="modal" data-target="#modalPesquisaPaciente"><span class="glyphicon glyphicon-search"></span></button>
+          <button class="btn btn-primary desgruda hidden-print" id="psqPaciente" data-toggle="modal" data-target="#modalPesquisaPaciente"><span class="glyphicon glyphicon-search"></span></button>
         </legend>
         
         <div class="form-group col-sm-4">
           <label for="nome">Nome</label>
           <input type="text" class="form-control" id="nome" readonly required>
         </div>
-        <div class="form-group col-sm-4">
+        <div class="form-group col-sm-4 hidden-print">
           <label for="email">Email</label>
           <input type="email" class="form-control" id="email" readonly required>
         </div>
-        <div class="form-group col-sm-4">
+        <div class="form-group col-sm-4 hidden-print">
           <label for="telefone">Telefone</label>
           <input type="text" class="form-control" id="telefone" readonly required>
         </div>
@@ -38,14 +41,15 @@
         <legend>
           Prontuário
           <div class="btn-group" role="group" aria-label="...">
-            <button id="atendimentoNovo" type="button" class="btn btn-success desgruda">
-              Novo <span class="glyphicon glyphicon-file"></span>
+            <button id="atendimentoNovo" type="button" class="btn btn-success desgruda hidden-print">
+              <span class="glyphicon glyphicon-file"></span>
+              Novo 
             </button>
 
             <div class="btn-group" role="group">
-              <button id="atendimentoHistorico" type="button" class="btn btn-warning desgruda dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button id="atendimentoHistorico" type="button" class="btn btn-warning desgruda dropdown-toggle hidden-print" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-folder-open"></span> &nbsp;
                 Histórico do Paciente
-                <span class="glyphicon glyphicon-folder-open"></span>
                 <span class="caret"></span>
               </button>
               <ul id="lista-consultas" class="dropdown-menu"></ul>
@@ -68,13 +72,18 @@
           <textarea class="form-control" rows="5" id="diagnostico"></textarea>
         </div>
 
+        <div class="form-group col-xs-12 visible-print-inline">
+          <label>Medicamentos</label>
+        </div>
+
         <div class="form-group col-md-6">
           <fieldset class="fieldset-interno caixa-protuario">
-            <legend>
-              <div class="row">
-                <div class="col-xs-4">Medicamentos</div>
-                <div class="input-group col-xs-7 desgruda">
-                  <input type="text" class="form-control" id="medicamento">
+            <legend class="hidden-print">
+              <div class="row">                
+                <div class="col-sm-5 hidden-xs">Medicamentos</div>
+                <div class="input-group col-sm-6 col-xs-10 col-xs-offset-1 desgruda">
+                  <div class="input-group-addon"><i class="fas fa-capsules botoes-direita"></i></div>
+                  <input type="text" class="form-control" id="medicamento" placeholder="Medicamentos">
                   <span class="input-group-btn">
                     <button class="btn btn-default" data-toggle="modal" data-target="#modalPesquisaMedicamento"><span class="glyphicon glyphicon-search"></span></button>
                   </span>
@@ -83,7 +92,7 @@
             </legend>
             <table id="tabMedicamentos" class="table">
               <thead class="altura-cabecalho">
-                <tr class="row">
+                <tr class="row hidden-print">
                   <th class="col-xs-5">Nome</th>
                   <th class="col-xs-7" colspan="2">Apresentação</th>
                 </tr>
@@ -93,13 +102,19 @@
           </fieldset>
         </div>
 
+        <div class="form-group col-xs-12 visible-print-inline">
+          <label>Exames</label>
+        </div>        
+
         <div class="form-group col-md-6">
           <fieldset class="fieldset-interno caixa-protuario">
-            <legend>
+            <legend class="hidden-print">
               <div class="row">
-                <div class="col-xs-4">Exames</div>
-                <div class="input-group col-xs-7 desgruda">
-                  <input type="text" class="form-control validacao" id="exame">
+                <div class="visible-print-inline">Exames</div>
+                <div class="col-sm-5 hidden-xs">Exames</div>
+                <div class="input-group col-sm-6 col-xs-10 col-xs-offset-1 hidden-print desgruda">                
+                  <div class="input-group-addon"><i class="fas fa-file-medical-alt"></i></div>
+                  <input type="text" class="form-control validacao" id="exame" placeholder="Exames">
                   <span class="input-group-btn">
                     <button class="btn btn-default" id="novoExame"><span class="glyphicon glyphicon-saved"></span></button>
                   </span>
@@ -108,7 +123,7 @@
             </legend>
             <table id="tabExames" class="table table-hover">
               <thead class="altura-cabecalho">
-                <tr class="row">
+                <tr class="row hidden-print">
                   <th class="col-xs-5">Exame</th>
                   <th class="col-xs-3">Exame Recebido</th>
                   <th class="col-xs-4" colspan="2">Entregue ao Paciente</th>
@@ -121,12 +136,12 @@
       </fieldset>
     
       
-        <div class="caixaAlerta col-xs-12 col-md-6"></div>
-        <div class="col-xs-12 col-md-3">
-          <button class="btn btn-primary margem-superior largura-total" id="salvaAtendimento"> Salvar atendimento <span class="glyphicon glyphicon-floppy-disk"> </span></button>
+        <div class="caixaAlerta col-xs-12 col-md-6 hidden-print"></div>
+        <div class="col-xs-12 col-md-3 hidden-print">
+          <button class="btn btn-primary margem-superior largura-total" id="salvaAtendimento"><span class="glyphicon glyphicon-floppy-disk">&nbsp;</span>Salvar atendimento</button>
         </div>
-        <div class="col-xs-12 col-md-3">
-          <button class="btn btn-danger margem-superior largura-total" id="excluirAtendimento">Excluir atendimento <span class="glyphicon glyphicon-trash"></span></button>
+        <div class="col-xs-12 col-md-3 hidden-print">
+          <button class="btn btn-danger margem-superior largura-total" id="excluirAtendimento"><span class="glyphicon glyphicon-trash">&nbsp;</span>Excluir atendimento</button>
         </div>
       
       <br/>
@@ -139,7 +154,7 @@
     <tbody id="linha-exame" >
       <tr class="row">
         <td class="nome-exame col-xs-5"></td>
-        <td class="col-xs-3">
+        <td class="col-xs-3 hidden-print">
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-primary btn-xs recebido active">
               <input type="radio" name="recebido" class="recebido" autocomplete="off" checked> Não
@@ -149,7 +164,7 @@
             </label>
           </div>
         </td>
-        <td class="col-xs-3">
+        <td class="col-xs-3 hidden-print">
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-primary btn-xs entregue active">
               <input type="radio" name="entregue" class="entregue" autocomplete="off" checked> Não
@@ -159,7 +174,7 @@
             </label>
           </div>
         </td>
-        <td class="col-xs-1"><button class="btn btn-danger btn-xs exclui-exame"><span class="glyphicon glyphicon-trash"></span></button></td>
+        <td class="col-xs-1 hidden-print"><button class="btn btn-danger btn-xs exclui-exame"><span class="glyphicon glyphicon-trash"></span></button></td>
       </tr>
     </tbody>
   </table>
